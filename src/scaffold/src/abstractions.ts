@@ -27,7 +27,7 @@ export type MiddlewareFactory<T extends IMiddleware> = { new(next: RequestDelega
 export enum ServiceLifetime {
     Transient,
     Scoped,
-    Singleton
+    Singleton,
 }
 
 export interface IServiceDescriptor {
@@ -54,7 +54,7 @@ export interface IStartup {
     configureServices?(services: IServiceCollection): void;
 }
 
-export type StartupFactory<T extends IStartup> = { new(): T }
+export type StartupFactory<T extends IStartup> = { new(): T };
 
 export interface IServiceWorkerBuilder {
     useStartup<T extends IStartup>(startupType: StartupFactory<T>): IServiceWorkerBuilder;
@@ -77,10 +77,10 @@ export interface IApplicationLifetime {
 }
 
 export class EventTokenSource {
-    private handlers: (() => Promise<void>)[];
-    private hasFired: boolean;
-
     public token: EventToken;
+
+    private handlers: Array<(() => Promise<void>)>;
+    private hasFired: boolean;
 
     constructor() {
         this.handlers = [];
@@ -88,15 +88,17 @@ export class EventTokenSource {
         this.token = new EventToken(this.handlers);
     }
 
-    public async fire() {        
-        if(!this.hasFired) {
+    public async fire() {
+        if (!this.hasFired) {
             this.hasFired = true;
 
             // for loop to actually await the response.
             // forEach kicks them all off without waiting
-            for(var i = 0; i < this.handlers.length; i++) {
+            // tslint:disable-next-line:prefer-for-of
+            for (let i = 0; i < this.handlers.length; i++) {
                 try {
                     await this.handlers[i]();
+                // tslint:disable-next-line:no-empty
                 } catch {}
             }
         }
@@ -104,9 +106,9 @@ export class EventTokenSource {
 }
 
 export class EventToken {
-    private handlers: (() => Promise<void>)[];
+    private handlers: Array<() => Promise<void>>;
 
-    constructor(handlers: (() => Promise<void>)[]) {
+    constructor(handlers: Array<() => Promise<void>>) {
         this.handlers = handlers;
     }
 

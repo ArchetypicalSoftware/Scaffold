@@ -8,29 +8,30 @@ export interface ICacheSettings extends IMapSettings {
 
 declare module "./../abstractions" {
     interface IApplicationBuilder {
-        cache(path: string, cacheStrategy: CacheStrategy, settings?: ICacheSettings) : void;
+        cache(path: string, cacheStrategy: CacheStrategy, settings?: ICacheSettings): void;
     }
 }
 
 declare module "./application-builder" {
+    // tslint:disable-next-line:interface-name
     interface ApplicationBuilder {
-        cache(path: string, cacheStrategy: CacheStrategy, settings?: ICacheSettings) : void;
+        cache(path: string, cacheStrategy: CacheStrategy, settings?: ICacheSettings): void;
     }
 }
 
-ApplicationBuilder.prototype.cache = function(path: string, cacheStrategy: CacheStrategy, settings?: ICacheSettings) : void {
+ApplicationBuilder.prototype.cache = function(path: string, cacheStrategy: CacheStrategy, settings?: ICacheSettings): void {
     settings = Object.assign({}, {
         key: this.config.version,
-        methods: ['GET']
+        methods: ["GET"],
     } as ICacheSettings, settings) as ICacheSettings;
 
     const requestDelegate = cacheStrategy(settings.key);
 
-    this.map(path, builder => {
+    this.map(path, (builder) => {
         builder.run((fetchEvent: FetchEvent) => {
             const response = requestDelegate(fetchEvent);
             fetchEvent.respondWith(response);
             return response;
-        });        
+        });
     }, settings);
-}
+};

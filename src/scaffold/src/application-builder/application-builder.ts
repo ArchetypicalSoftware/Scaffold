@@ -1,4 +1,4 @@
-import { RequestDelegate, IApplicationBuilder, IServiceProvider, IServiceWorkerConfiguration } from "../abstractions"
+import { IApplicationBuilder, IServiceProvider, IServiceWorkerConfiguration, RequestDelegate } from "../abstractions";
 
 export class ApplicationBuilder implements IApplicationBuilder {
     public properties: Map<string, object>;
@@ -6,8 +6,8 @@ export class ApplicationBuilder implements IApplicationBuilder {
     public applicationServices: IServiceProvider;
     public config: IServiceWorkerConfiguration;
 
-    private components: ((requestDelegate: RequestDelegate) => RequestDelegate)[] = [];
-    
+    private components: Array<(requestDelegate: RequestDelegate) => RequestDelegate> = [];
+
     constructor(config: IServiceWorkerConfiguration, applicationServices: IServiceProvider) {
         this.properties = new Map<string, object>();
         this.applicationServices = applicationServices;
@@ -22,7 +22,7 @@ export class ApplicationBuilder implements IApplicationBuilder {
 
     public clone(): IApplicationBuilder {
         const clone = new ApplicationBuilder(this.config, this.applicationServices);
-        
+
         this.properties.forEach((value: object, key: string) => clone.setProperty(key, value));
 
         return clone;
@@ -58,12 +58,12 @@ export class ApplicationBuilder implements IApplicationBuilder {
      * @memberof ApplicationBuilder
      */
     public run(handler: RequestDelegate) {
-        this.use(x => handler);
+        this.use(() => handler);
     }
 
     public build(): RequestDelegate {
         let app: RequestDelegate = this.defaultRequestDelegate;
-        this.components.reverse().forEach(component => app = component(app));
+        this.components.reverse().forEach((component) => app = component(app));
         return app;
     }
 }

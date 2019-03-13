@@ -10,14 +10,19 @@ interface ICacheStrategies {
     backgroundFetch: CacheStrategy;
 }
 
+// tslint:disable-next-line:variable-name
 export const CacheStrategies: ICacheStrategies = {
-    networkOnly: (key?: string) => {
-        return (fetchEvent: FetchEvent) => fetch(fetchEvent.request);
-    },
-    cacheOnly: (key?: string) => {
+    backgroundFetch: (key?: string) => {
         return async (fetchEvent: FetchEvent) => {
             const cache = await caches.open(key!);
-            return await cache.match(fetchEvent.request) as Response;
+            const response = await cache.match(fetchEvent.request);
+
+            const fetchPromise = fetch(fetchEvent.request).then(async (fetchResponse) => {
+                await cache.put(fetchEvent.request, fetchResponse.clone());
+                return fetchResponse;
+            });
+
+            return response || fetchPromise;
         };
     },
     cacheFirst: (key?: string) => {
@@ -33,6 +38,12 @@ export const CacheStrategies: ICacheStrategies = {
             return response;
         };
     },
+    cacheOnly: (key?: string) => {
+        return async (fetchEvent: FetchEvent) => {
+            const cache = await caches.open(key!);
+            return await cache.match(fetchEvent.request) as Response;
+        };
+    },
     networkFirst: (key?: string) => {
         return async (fetchEvent: FetchEvent) => {
             let response = await fetch(fetchEvent.request);
@@ -45,17 +56,7 @@ export const CacheStrategies: ICacheStrategies = {
             return response;
         };
     },
-    backgroundFetch: (key?: string) => {
-        return async (fetchEvent: FetchEvent) => {
-            const cache = await caches.open(key!);
-            let response = await cache.match(fetchEvent.request);
-
-            const fetchPromise = fetch(fetchEvent.request).then(async (fetchResponse) => {
-                await cache.put(fetchEvent.request, fetchResponse.clone());
-                return fetchResponse;
-            });
-
-            return response || fetchPromise;
-        }
-    }
+    networkOnly: (key?: string) => {
+        return (fetchEvent: FetchEvent) => fetch(fetchEvent.request);
+    },
 };
