@@ -1,3 +1,5 @@
+export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "HEAD" | "CONNECT" | "OPTIONS" | "TRACE" | "PATCH";
+
 class UrlEx extends URL {
     public fileExtension: string = "";
     public pathTokens: string[] = [];
@@ -78,19 +80,21 @@ export class RouteVariables {
     }
 }
 
+
+
 export class Route {
     public path: string;
     private elements: RouteElement[];
     private fileExtension: RouteElement | null;
     private query: Map<string, RouteElement>;
     private url: UrlEx;
-    private methods: Array<"GET" | "POST" | "PUT" | "DELETE" | "HEAD">;
+    private methods: HttpMethod[];
 
-    constructor(path: string, base?: string | URL | undefined, methods?: Array<"GET" | "POST" | "PUT" | "DELETE" | "HEAD">) {
+    constructor(path: string, base?: string | URL | undefined, methods?: HttpMethod[]) {
         this.path = path;
         this.url = new UrlEx(path, base);
 
-        this.methods = methods || ["GET"];
+        this.methods = (methods || ["GET"]).map((x) => x.toUpperCase()) as HttpMethod[];
 
         this.elements = [];
         this.fileExtension = this.url.fileExtension ? new RouteElement(this.url.fileExtension) : null;
@@ -108,54 +112,54 @@ export class Route {
             return false;
         }
 
-        const urlElements = new UrlEx(request.url);
+        const url = new UrlEx(request.url);
 
-        if (this.fileExtension && !urlElements.fileExtension) {
+        if (this.url.origin.toLowerCase() !== url.origin.toLowerCase()) {
             return false;
         }
 
-        if (this.fileExtension) {
-            if (!urlElements.fileExtension || !this.fileExtension.isMatch(urlElements.fileExtension)) {
-                return false;
-            }
+        let isEndDoubleWildcard = false;
+        let routeIndex = 0;
+        let tokenIndex = 0;
 
-            let index = 0;
-            let urlIndex = 0;
+        while (routeIndex < this.elements.length && tokenIndex < url.pathTokens.length) {
+            const element = this.elements[routeIndex];
 
-            while (index < this.elements.length) {
-                const element = this.elements[index];
-
-                if (element.type === RouteElementType.DoubleWildcard) {
-                    urlIndex = urlElements.pathTokens.length - 1;
-                } else if (!element.isMatch(urlElements.pathTokens[urlIndex])) {
-                    return false;
+            if (element.type === RouteElementType.DoubleWildcard) {
+                if (routeIndex === this.elements.length - 1) {
+                    // This is the last element so consider everything included
+                    // e.g. /Path/To/Check/**
+                    isEndDoubleWildcard = true;
+                    break;
                 } else {
-                    urlIndex++;
+                    // This is the second to last element
+                    // e.g. /Path/To/Check/**/file.js or /Path/To/Check/**/*.js
+                    routeIndex++;
+                    tokenIndex = url.pathTokens.length - 1;
                 }
-
-                index++;
+            } else if (!element.isMatch(url.pathTokens[tokenIndex])) {
+                return false;
+            } else {
+                routeIndex++;
+                tokenIndex++;
             }
-        } else {
-            if (this.elements.length !== urlElements.pathTokens.length) {
+        }
+
+        if (!isEndDoubleWildcard) {
+            if (routeIndex !== this.elements.length || tokenIndex !== url.pathTokens.length) {
                 return false;
             }
 
-            let index = 0;
-
-            while (index < this.elements.length) {
-                if (!this.elements[index].isMatch(urlElements.pathTokens[index])) {
-                    return false;
-                }
-
-                index++;
+            if (this.fileExtension && (!url.fileExtension || !this.fileExtension.isMatch(url.fileExtension))) {
+                return false;
             }
         }
 
         let queryMatch: boolean = true;
         this.query.forEach((routeElement: RouteElement, key: string) => {
-            const value = urlElements.searchParams.get(key);
+            const value = url.searchParams.get(key);
 
-            if (value && routeElement.isMatch(value)) {
+            if (value && !routeElement.isMatch(value)) {
                 queryMatch = false;
             }
         });

@@ -9,13 +9,13 @@ export interface IMapSettings {
 
 class MapOptions {
     public branch: RequestDelegate;
-    public route: Route;
+    public routes: Route[];
     public predicate: ((fetchEvent: FetchEvent, routeVariables: RouteVariables) => boolean) | null;
 
-    constructor(branch: RequestDelegate, route: Route,
+    constructor(branch: RequestDelegate, routes: Route[],
                 predicate: ((fetchEvent: FetchEvent, routeVariables: RouteVariables) => boolean) | null = null) {
         this.branch = branch;
-        this.route = route;
+        this.routes = routes;
         this.predicate = predicate;
     }
 }
@@ -30,15 +30,19 @@ class MapMiddleware implements IMiddleware {
     }
 
     public async invokeAsync(fetchEvent: FetchEvent): Promise<Response> {
-        if (this.options.route.isMatch(fetchEvent.request)) {
-            if (this.options.predicate) {
-                const routeVariables = this.options.route.getVariables(fetchEvent.request.url);
+        // tslint:disable-next-line:prefer-for-of
+        for (let i = 0; i < this.options.routes.length; i++) {
+            const route = this.options.routes[i];
+            if (route.isMatch(fetchEvent.request)) {
+                if (this.options.predicate) {
+                    const routeVariables = route.getVariables(fetchEvent.request.url);
 
-                if (this.options.predicate(fetchEvent, routeVariables)) {
+                    if (this.options.predicate(fetchEvent, routeVariables)) {
+                        return await this.options.branch(fetchEvent);
+                    }
+                } else {
                     return await this.options.branch(fetchEvent);
                 }
-            } else {
-                return await this.options.branch(fetchEvent);
             }
         }
 
@@ -48,8 +52,8 @@ class MapMiddleware implements IMiddleware {
 
 declare module "./../abstractions" {
     interface IApplicationBuilder {
-        map(path: string, configuration: (applicationBuilder: IApplicationBuilder) => void, settings?: IMapSettings): IApplicationBuilder;
-        mapWhen(path: string, predicate: (fetchEvent: FetchEvent, routeVariables: RouteVariables) => boolean,
+        map(path: string | string[], configuration: (applicationBuilder: IApplicationBuilder) => void, settings?: IMapSettings): IApplicationBuilder;
+        mapWhen(path: string | string[], predicate: (fetchEvent: FetchEvent, routeVariables: RouteVariables) => boolean,
                 configuration: (applicationBuilder: IApplicationBuilder) => void, settings?: IMapSettings): IApplicationBuilder;
     }
 }
@@ -57,19 +61,19 @@ declare module "./../abstractions" {
 declare module "./application-builder" {
     // tslint:disable-next-line:interface-name
     interface ApplicationBuilder {
-        map(path: string, configuration: (applicationBuilder: IApplicationBuilder) => void, settings?: IMapSettings): IApplicationBuilder;
-        mapWhen(path: string, predicate: (fetchEvent: FetchEvent, routeVariables: RouteVariables) => boolean,
+        map(path: string | string[], configuration: (applicationBuilder: IApplicationBuilder) => void, settings?: IMapSettings): IApplicationBuilder;
+        mapWhen(path: string | string[], predicate: (fetchEvent: FetchEvent, routeVariables: RouteVariables) => boolean,
                 configuration: (applicationBuilder: IApplicationBuilder) => void, settings?: IMapSettings): IApplicationBuilder;
     }
 }
 
-ApplicationBuilder.prototype.map = function(path: string,
+ApplicationBuilder.prototype.map = function(path: string | string[],
                                             configuration: (applicationBuilder: IApplicationBuilder) => void,
                                             settings?: IMapSettings): IApplicationBuilder {
     return this.mapWhen(path, null as unknown as (fetchEvent: FetchEvent, routeVariables: RouteVariables) => boolean, configuration, settings);
 };
 
-ApplicationBuilder.prototype.mapWhen = function(path: string,
+ApplicationBuilder.prototype.mapWhen = function(path: string | string[],
                                                 predicate: (fetchEvent: FetchEvent, routeVariables: RouteVariables) => boolean,
                                                 configuration: (applicationBuilder: IApplicationBuilder) => void,
                                                 settings?: IMapSettings): IApplicationBuilder {
@@ -81,8 +85,12 @@ ApplicationBuilder.prototype.mapWhen = function(path: string,
     configuration(branchBuilder);
     const branch = branchBuilder.build();
 
-    const route = new Route(path, this.config.origin!);
+    if (typeof(path) === "string") {
+        path = [path];
+    }
 
-    const options = new MapOptions(branch, route, predicate);
+    const routes = path.map((x) => new Route(x, this.config.origin!, settings!.methods));
+
+    const options = new MapOptions(branch, routes, predicate);
     return this.useMiddleware(MapMiddleware, options);
 };
