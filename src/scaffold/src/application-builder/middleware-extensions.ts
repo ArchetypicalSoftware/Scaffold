@@ -1,4 +1,4 @@
-import { IApplicationBuilder, IMiddleware, MiddlewareFactory, RequestDelegate } from "../abstractions";
+import { FetchContext, IApplicationBuilder, IMiddleware, MiddlewareFactory, RequestDelegate } from "../abstractions";
 import { ApplicationBuilder } from "./application-builder";
 
 declare module "./../abstractions" {
@@ -22,8 +22,8 @@ ApplicationBuilder.prototype.useMiddleware = function<T extends IMiddleware>(mid
         // tslint:disable-next-line:new-parens
         const instance: IMiddleware = new (Function.prototype.bind.apply(middlewareType, params as [any, ...any[]]) as any) as IMiddleware;
 
-        return async (fetchEvent: FetchEvent) => {
-            return await instance.invokeAsync(fetchEvent);
+        return async (fetchContext: FetchContext) => {
+            return await instance.invokeAsync(fetchContext);
         };
     });
 

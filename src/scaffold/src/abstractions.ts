@@ -1,8 +1,38 @@
-export type RequestDelegate = (fetchEvent: FetchEvent) => Promise<Response>;
+export class LogEntry {
+    public logLevel: LogLevel;
+    public message: string;
+
+    constructor(logLevel: LogLevel, message: string) {
+        this.logLevel = logLevel;
+        this.message = message;
+    }
+}
+
+export class FetchContext {
+    public request: Request;
+    public response: Promise<Response>;
+    public event: FetchEvent;
+    public serviceProvider: IServiceProvider;
+    public logEntries: LogEntry[];
+
+    constructor(fetchEvent: FetchEvent, serviceProvider?: IServiceProvider) {
+        this.request = fetchEvent.request;
+        this.response = null as unknown as Promise<Response>;
+        this.event = fetchEvent;
+        this.serviceProvider = serviceProvider as IServiceProvider;
+        this.logEntries = [];
+    }
+
+    public log(logLevel: LogLevel, message: string): void {
+        this.logEntries.push(new LogEntry(logLevel, message));
+    }
+}
+
+export type RequestDelegate = (fetchContext: FetchContext) => Promise<FetchContext>;
 
 export interface IMiddleware {
     next: RequestDelegate;
-    invokeAsync(fetchEvent: FetchEvent): Promise<Response>;
+    invokeAsync(fetchContext: FetchContext): Promise<FetchContext>;
 }
 
 export interface IApplicationBuilder {
@@ -18,7 +48,7 @@ export interface IApplicationBuilder {
     clone(): IApplicationBuilder;
     build(): RequestDelegate;
     use(middleware: (requestDelegate: RequestDelegate) => RequestDelegate): IApplicationBuilder;
-    useNext(middleware: (fetchEvent: FetchEvent, next: () => Promise<Response>) => Promise<Response>): IApplicationBuilder;
+    useNext(middleware: (fetchContext: FetchContext, next: () => Promise<FetchContext>) => Promise<FetchContext>): IApplicationBuilder;
     run(handler: RequestDelegate): void;
 }
 
@@ -88,31 +118,69 @@ export class EventTokenSource {
         this.token = new EventToken(this.handlers);
     }
 
-    public async fire() {
+    public async fire(logger?: ILogger) {
         if (!this.hasFired) {
             this.hasFired = true;
 
-            // for loop to actually await the response.
-            // forEach kicks them all off without waiting
-            // tslint:disable-next-line:prefer-for-of
-            for (let i = 0; i < this.handlers.length; i++) {
+            const promises: Array<Promise<void>> = [];
+
+            this.handlers.forEach((handler) => {
                 try {
-                    await this.handlers[i]();
-                // tslint:disable-next-line:no-empty
-                } catch {}
-            }
+                    promises.push(handler());
+                } catch (err) {
+                    if (logger) {
+                        logger.error(err);
+                    }
+                }
+            });
+
+            // Wait for all the promises even if there are rejections
+            await Promise.all(promises.map((promise) => {
+                if (promise.catch) {
+                    return promise.catch((e) => {
+                        if (logger) {
+                            logger.error(e);
+                        }
+                    });
+                }
+            }));
         }
     }
 }
 
 export class EventToken {
-    private handlers: Array<() => Promise<void>>;
+    private handlers: Array<(event: ExtendableEvent) => Promise<void>>;
 
-    constructor(handlers: Array<() => Promise<void>>) {
+    constructor(handlers: Array<(event: ExtendableEvent) => Promise<void>>) {
         this.handlers = handlers;
     }
 
-    public register(handler: () => Promise<void>) {
+    public register(handler: (event: ExtendableEvent) => Promise<void>) {
         this.handlers.push(handler);
     }
+}
+
+export interface ILogger {
+    logLevel: LogLevel;
+
+    isDebug: boolean;
+    isInfo: boolean;
+    isWarn: boolean;
+
+    debug(message: string): void;
+    info(message: string): void;
+    warn(message: string): void;
+    error(message: string): void;
+
+    group(title: string, message?: string, logLevel?: LogLevel): void;
+    groupCollapsed(title: string, message?: string, logLevel?: LogLevel): void;
+    groupEnd(): void;
+}
+
+export enum LogLevel {
+    None = 0,
+    Debug = 1,
+    Info = 2,
+    Warn = 3,
+    Error = 4,
 }

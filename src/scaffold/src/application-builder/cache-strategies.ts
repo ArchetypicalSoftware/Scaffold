@@ -1,6 +1,6 @@
-import { RequestDelegate } from "../abstractions";
+import { FetchContext, LogLevel, RequestDelegate } from "../abstractions";
 
-export type CacheStrategy = (key?: string) => RequestDelegate;
+export type CacheStrategy = (key?: string) => (fetchContext: FetchContext) => Promise<Response>;
 
 interface ICacheStrategies {
     networkOnly: CacheStrategy;
@@ -13,12 +13,14 @@ interface ICacheStrategies {
 // tslint:disable-next-line:variable-name
 export const CacheStrategies: ICacheStrategies = {
     backgroundFetch: (key?: string) => {
-        return async (fetchEvent: FetchEvent) => {
-            const cache = await caches.open(key!);
-            const response = await cache.match(fetchEvent.request);
+        return async (fetchContext: FetchContext) => {
+            fetchContext.log(LogLevel.Debug, "CacheStrategy: backgroundFetch");
 
-            const fetchPromise = fetch(fetchEvent.request).then(async (fetchResponse) => {
-                await cache.put(fetchEvent.request, fetchResponse.clone());
+            const cache = await caches.open(key!);
+            const response = await cache.match(fetchContext.request);
+
+            const fetchPromise = fetch(fetchContext.request).then(async (fetchResponse) => {
+                await cache.put(fetchContext.request, fetchResponse.clone());
                 return fetchResponse;
             });
 
@@ -26,37 +28,48 @@ export const CacheStrategies: ICacheStrategies = {
         };
     },
     cacheFirst: (key?: string) => {
-        return async (fetchEvent: FetchEvent) => {
+        return async (fetchContext: FetchContext) => {
+            fetchContext.log(LogLevel.Debug, "CacheStrategy: cacheFirst");
+            
             const cache = await caches.open(key!);
-            let response = await cache.match(fetchEvent.request);
+            let response = await cache.match(fetchContext.request);
             if (!response) {
-                response = await fetch(fetchEvent.request);
+                response = await fetch(fetchContext.request);
                 if (response.ok) {
-                    await cache.put(fetchEvent.request, response.clone());
+                    await cache.put(fetchContext.request, response.clone());
                 }
             }
+
             return response;
         };
     },
     cacheOnly: (key?: string) => {
-        return async (fetchEvent: FetchEvent) => {
+        return async (fetchContext: FetchContext) => {
+            fetchContext.log(LogLevel.Debug, "CacheStrategy: cacheOnly");
+            
             const cache = await caches.open(key!);
-            return await cache.match(fetchEvent.request) as Response;
+            return cache.match(fetchContext.request) as Promise<Response>;
         };
     },
     networkFirst: (key?: string) => {
-        return async (fetchEvent: FetchEvent) => {
-            let response = await fetch(fetchEvent.request);
+        return async (fetchContext: FetchContext) => {
+            fetchContext.log(LogLevel.Debug, "CacheStrategy: networkFirst");
+            
+            let response = await fetch(fetchContext.request);
 
             if (!response.ok) {
                 const cache = await caches.open(key!);
-                response = await cache.match(fetchEvent.request) as Response;
+                response = await cache.match(fetchContext.request) as Response;
             }
 
             return response;
         };
     },
     networkOnly: (key?: string) => {
-        return (fetchEvent: FetchEvent) => fetch(fetchEvent.request);
+        return (fetchContext: FetchContext) => {
+            fetchContext.log(LogLevel.Debug, "CacheStrategy: networkOnly");
+            
+            return fetch(fetchContext.request);
+        };
     },
 };

@@ -1,30 +1,30 @@
-import { IApplicationBuilder, IServiceProvider, IServiceWorkerConfiguration, RequestDelegate } from "../../abstractions";
+import { FetchContext, IApplicationBuilder, IServiceProvider, IServiceWorkerConfiguration, RequestDelegate } from "../../abstractions";
 import { FetchEvent, Request, Response } from "../service-worker.mocks"
 import { ApplicationBuilder } from "./../../application-builder/application-builder";
 
 describe("Application Builder tests", () => {
     let applicationBuilder: IApplicationBuilder;
-    let fetchEvent: FetchEvent;
+    let fetchContext: FetchContext;
 
     beforeEach(() => {
         applicationBuilder = new ApplicationBuilder(null as unknown as IServiceWorkerConfiguration, null as unknown as IServiceProvider);
-        applicationBuilder.defaultRequestDelegate = (f: FetchEvent) => Promise.resolve(new Response());
-        fetchEvent = new FetchEvent(new Request("/testpath"));
+        applicationBuilder.defaultRequestDelegate = (f: FetchContext) => Promise.resolve(f);
+        fetchContext = new FetchContext(new FetchEvent(new Request("/testpath")));
     });
 
     test("use", async (done) => {
         let result = "";
 
         applicationBuilder.use((requestDelegate: RequestDelegate) => {
-            return async (f: FetchEvent) => {
+            return async (f: FetchContext) => {
                 result = f.request.url;
                 return requestDelegate(f);
             };
         });
 
         const r = applicationBuilder.build();
-        await r(fetchEvent);
-        expect(result).toBe(fetchEvent.request.url);
+        await r(fetchContext);
+        expect(result).toBe(fetchContext.request.url);
 
         done();
     });
@@ -32,14 +32,14 @@ describe("Application Builder tests", () => {
     test("run", async (done) => {
         let result = "";
 
-        applicationBuilder.run((f: FetchEvent) => {
+        applicationBuilder.run((f: FetchContext) => {
             result = f.request.url;
-            return Promise.resolve(new Response());
+            return Promise.resolve(f);
         });
 
         const r = applicationBuilder.build();
-        await r(fetchEvent);
-        expect(result).toBe(fetchEvent.request.url);
+        await r(fetchContext);
+        expect(result).toBe(fetchContext.request.url);
 
         done();
     });
@@ -47,14 +47,14 @@ describe("Application Builder tests", () => {
     test("useFunc", async (done) => {
         let result = "";
 
-        applicationBuilder.useNext((f: FetchEvent, next: () => Promise<Response>) => {
+        applicationBuilder.useNext((f: FetchContext, next: () => Promise<FetchContext>) => {
             result = f.request.url;
             return next();
         });
 
         const r = applicationBuilder.build();
-        await r(fetchEvent);
-        expect(result).toBe(fetchEvent.request.url);
+        await r(fetchContext);
+        expect(result).toBe(fetchContext.request.url);
 
         done();
     });
@@ -69,25 +69,25 @@ describe("Application Builder tests", () => {
     test("nested use", async (done) => {
         const results: string[] = [];
 
-        applicationBuilder.use((requestDelegate: RequestDelegate) => {
-            return async (fetchEvent: FetchEvent) => {
+        applicationBuilder.use((r: RequestDelegate) => {
+            return async (f: FetchContext) => {
                 results.push("result1");
-                return await requestDelegate(fetchEvent);
+                return await r(f);
             };
         });
 
-        applicationBuilder.useNext(async (fetchEvent: FetchEvent, next: () => Promise<Response>) => {
+        applicationBuilder.useNext(async (f: FetchContext, next: () => Promise<FetchContext>) => {
             results.push("result2");
             return await next();
         });
 
-        applicationBuilder.run(async (fetchEvent: FetchEvent) => {
+        applicationBuilder.run(async (f: FetchContext) => {
             results.push("result3");
-            return Promise.resolve(new Response());
+            return Promise.resolve(f);
         });
 
         const requestDelegate = applicationBuilder.build();
-        await requestDelegate(fetchEvent);
+        await requestDelegate(fetchContext);
 
         expect(results.length).toBe(3);
         expect(results[0]).toBe("result1");

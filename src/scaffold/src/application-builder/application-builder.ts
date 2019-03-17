@@ -1,4 +1,5 @@
-import { IApplicationBuilder, IServiceProvider, IServiceWorkerConfiguration, RequestDelegate } from "../abstractions";
+import { FetchContext, IApplicationBuilder, ILogger, IServiceProvider, IServiceWorkerConfiguration, LogLevel, 
+    RequestDelegate } from "../abstractions";
 
 export class ApplicationBuilder implements IApplicationBuilder {
     public properties: Map<string, object>;
@@ -13,10 +14,11 @@ export class ApplicationBuilder implements IApplicationBuilder {
         this.applicationServices = applicationServices;
         this.config = config;
 
-        this.defaultRequestDelegate = async (fetchEvent: FetchEvent): Promise<Response> => {
-            const response = fetch(fetchEvent.request);
-            fetchEvent.respondWith(response);
-            return await response;
+        this.defaultRequestDelegate = (fetchContext: FetchContext): Promise<FetchContext> => {
+            fetchContext.log(LogLevel.Debug, "Default handler: executing fetch");
+            fetchContext.response = fetch(fetchContext.request);
+            fetchContext.event.respondWith(fetchContext.response);
+            return Promise.resolve(fetchContext);
         };
     }
 
@@ -41,11 +43,11 @@ export class ApplicationBuilder implements IApplicationBuilder {
         return this;
     }
 
-    public useNext(middleware: (fetchEvent: FetchEvent, next: () => Promise<Response>) => Promise<Response>): IApplicationBuilder {
+    public useNext(middleware: (fetchContext: FetchContext, next: () => Promise<FetchContext>) => Promise<FetchContext>): IApplicationBuilder {
         this.use((next: RequestDelegate) => {
-            return async (fetchEvent: FetchEvent) => {
-                const simpleNext = () => next(fetchEvent);
-                return middleware(fetchEvent, simpleNext);
+            return (fetchContext: FetchContext) => {
+                const simpleNext = () => next(fetchContext);
+                return middleware(fetchContext, simpleNext);
             };
         });
         return this;

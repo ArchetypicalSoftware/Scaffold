@@ -80,8 +80,6 @@ export class RouteVariables {
     }
 }
 
-
-
 export class Route {
     public path: string;
     private elements: RouteElement[];
