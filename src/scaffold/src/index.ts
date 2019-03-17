@@ -19,12 +19,16 @@ import { ServiceProvider } from "./service-collection/service-provider";
 
 export { IServiceCollection, IServiceProvider, ServiceCollection, ServiceProvider };
 
-import { IServiceWorkerBuilder, IStartup, StartupFactory } from "./abstractions";
+import { ILogger, ILoggingBuilder, IServiceWorkerBuilder, IStartup, StartupFactory } from "./abstractions";
 import { ServiceWorker } from "./service-worker";
 import { ServiceWorkerBuilder } from "./service-worker-builder";
 
-export { IServiceWorkerBuilder, IStartup, StartupFactory, ServiceWorkerBuilder, ServiceWorker };
+export { ILogger, ILoggingBuilder, IServiceWorkerBuilder, IStartup, StartupFactory, ServiceWorkerBuilder, ServiceWorker };
 
 import { CacheStrategies, CacheStrategy } from "./application-builder/cache-strategies";
 
 export { CacheStrategy, CacheStrategies };
+
+import { Logger } from "./logger"
+
+export { Logger };

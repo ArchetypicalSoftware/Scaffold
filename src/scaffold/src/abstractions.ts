@@ -87,6 +87,7 @@ export interface IStartup {
 export type StartupFactory<T extends IStartup> = { new(): T };
 
 export interface IServiceWorkerBuilder {
+    configureLogging(configuration: (builder: ILoggingBuilder) => void): IServiceWorkerBuilder;
     useStartup<T extends IStartup>(startupType: StartupFactory<T>): IServiceWorkerBuilder;
     build(): void;
 }
@@ -158,6 +159,11 @@ export class EventToken {
     public register(handler: (event: ExtendableEvent) => Promise<void>) {
         this.handlers.push(handler);
     }
+}
+
+export interface ILoggingBuilder {
+    logLevel: LogLevel | null;
+    loggerFactory: (() => ILogger) | null;
 }
 
 export interface ILogger {

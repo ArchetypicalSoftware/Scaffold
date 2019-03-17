@@ -4,11 +4,9 @@ import { ILogger, LogLevel } from "./abstractions";
 const noop = () => {};
 
 export class Logger implements ILogger {
-    public logLevel: LogLevel;
+    public logLevel: LogLevel = LogLevel.Info;
 
-    constructor(logLevel: LogLevel) {
-        this.logLevel = logLevel;
-
+    constructor() {
         // tslint:disable-next-line:no-console
         console.log = console.log || noop;
         // tslint:disable-next-line:no-console

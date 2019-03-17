@@ -1,5 +1,5 @@
 import { EventToken, EventTokenSource, FetchContext, IApplicationLifetime, ILogger, IServiceCollection, IServiceWorkerBuilder,
-    IServiceWorkerConfiguration, IStartup, LogLevel, RequestDelegate, StartupFactory } from "./abstractions";
+    IServiceWorkerConfiguration, IStartup, LogLevel, RequestDelegate, StartupFactory, ILoggingBuilder } from "./abstractions";
 import { ApplicationBuilder } from "./application-builder/application-builder";
 import { Logger } from "./logger";
 import { ServiceCollection } from "./service-collection/service-collection";
@@ -21,11 +21,17 @@ class ApplicationLifetime implements IApplicationLifetime {
     }
 }
 
+class LoggingBuilder implements ILoggingBuilder {
+    public logLevel: LogLevel | null = null;    
+    public loggerFactory: (() => ILogger) | null = null;  
+}
+
 export class ServiceWorkerBuilder implements IServiceWorkerBuilder {
     private startupType: StartupFactory<IStartup> | null;
     private services: IServiceCollection;
     private config: IServiceWorkerConfiguration;
     private applicationLifetime: ApplicationLifetime;
+    private logger: ILogger;
 
     constructor(config: IServiceWorkerConfiguration) {
         this.config = Object.assign({}, {
@@ -37,7 +43,27 @@ export class ServiceWorkerBuilder implements IServiceWorkerBuilder {
         this.services = new ServiceCollection();
         this.applicationLifetime = new ApplicationLifetime();
         this.services.addSingleton("IApplicationLifetime", () => this.applicationLifetime);
-        this.services.addSingleton("ILogger", () => new Logger(this.config.environment === "development" ? LogLevel.Debug : LogLevel.Error));
+
+        this.logger = new Logger();
+        this.services.addSingleton("ILogger", () => this.logger);
+    }
+
+    public configureLogging(configuration: (builder: ILoggingBuilder) => void): IServiceWorkerBuilder {
+        const loggingBuilder = new LoggingBuilder();
+
+        configuration(loggingBuilder);
+
+        if (loggingBuilder.loggerFactory !== null) {
+            this.logger = loggingBuilder.loggerFactory();
+
+            // Check if type changed
+        }
+
+        if (loggingBuilder.logLevel !== null) {
+            this.logger.logLevel = loggingBuilder.logLevel;
+        }
+
+        return this;
     }
 
     public useStartup<T extends IStartup>(startupType: StartupFactory<T>): IServiceWorkerBuilder {
