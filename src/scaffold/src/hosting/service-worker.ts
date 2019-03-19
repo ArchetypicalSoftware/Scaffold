@@ -1,4 +1,4 @@
-import { IServiceWorkerBuilder, IServiceWorkerConfiguration } from "./abstractions";
+import { IServiceWorkerBuilder, IServiceWorkerConfiguration } from "../abstractions";
 import { ServiceWorkerBuilder } from "./service-worker-builder";
 
 export class ServiceWorker {

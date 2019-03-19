@@ -1,7 +1,10 @@
-import { FetchContext, IApplicationBuilder, IMiddleware, IServiceProvider, IServiceWorkerConfiguration, RequestDelegate } from "../../abstractions";
-import { FetchEvent, Request, Response } from "../service-worker.mocks";
-import { ApplicationBuilder } from "./../../application-builder/application-builder";
-import "./../../application-builder/middleware-extensions";
+import { IApplicationBuilder, IFetchContext, IMiddleware, IServiceProvider, IServiceWorkerConfiguration, 
+    RequestDelegate } from "../../src/abstractions";
+import { FetchEvent, Request } from "../service-worker.mocks";
+import { ApplicationBuilder } from "./../../src/application-builder/application-builder";
+import "./../../src/application-builder/middleware-extensions";
+import { FetchContext } from "./../../src/fetch/fetch-context";
+
 
 class MyMiddleware implements IMiddleware {
     public next: RequestDelegate;
@@ -12,7 +15,7 @@ class MyMiddleware implements IMiddleware {
         this.testObject = testObject;
     }
 
-    public invokeAsync(fetchContext: FetchContext): Promise<FetchContext> {
+    public invokeAsync(fetchContext: IFetchContext): Promise<IFetchContext> {
         this.testObject.testValue = fetchContext.request.url;
         return this.next(fetchContext);
     }
@@ -20,11 +23,11 @@ class MyMiddleware implements IMiddleware {
 
 describe("Middleware tests", () => {
     let applicationBuilder: IApplicationBuilder;
-    let fetchContext: FetchContext;
+    let fetchContext: IFetchContext;
 
     beforeEach(() => {
         applicationBuilder = new ApplicationBuilder(null as unknown as IServiceWorkerConfiguration, null as unknown as IServiceProvider);
-        applicationBuilder.defaultRequestDelegate = (f: FetchContext) => Promise.resolve(f);
+        applicationBuilder.defaultRequestDelegate = (f: IFetchContext) => Promise.resolve(f);
         fetchContext = new FetchContext(new FetchEvent(new Request("/testpath")));
     });
 

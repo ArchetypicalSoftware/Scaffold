@@ -1,4 +1,4 @@
-import { Route, RouteVariables } from "./../../application-builder/route";
+import { Route, RouteVariables } from "./../../src/internal/route";
 import { Request } from "./../service-worker.mocks";
 
 describe("Route tests", () => {

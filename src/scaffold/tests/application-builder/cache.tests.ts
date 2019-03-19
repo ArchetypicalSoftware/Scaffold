@@ -1,9 +1,9 @@
-import { FetchContext, IApplicationBuilder, IServiceProvider, IServiceWorkerConfiguration } from "../../abstractions";
-import "../../application-builder/cache-extensions";
-import { CacheStrategy } from "../../application-builder/cache-strategies";
-import "../../application-builder/map-extensions";
+import { CacheStrategy, IApplicationBuilder, IFetchContext, IServiceProvider, IServiceWorkerConfiguration } from "../../src/abstractions";
+import "../../src/application-builder/cache-extensions";
+import "../../src/application-builder/map-extensions";
 import { FetchEvent, Request, Response } from "../service-worker.mocks";
-import { ApplicationBuilder } from "./../../application-builder/application-builder";
+import { ApplicationBuilder } from "./../../src/application-builder/application-builder";
+import { FetchContext } from "./../../src/fetch/fetch-context";
 
 describe("Cache tests", () => {
     let applicationBuilder: IApplicationBuilder;
@@ -11,7 +11,7 @@ describe("Cache tests", () => {
     const origin = "http://www.example.com";
 
     const noopCacheStrategy: CacheStrategy = (key?: string) => {
-        return (fetchContext: FetchContext) => {
+        return (fetchContext: IFetchContext) => {
             results.push(fetchContext.request.url);
             return Promise.resolve(new Response());
         };
@@ -22,7 +22,7 @@ describe("Cache tests", () => {
     beforeEach(() => {
         applicationBuilder = new ApplicationBuilder({ origin } as IServiceWorkerConfiguration,
                                                     null as unknown as IServiceProvider);
-        applicationBuilder.defaultRequestDelegate = (f: FetchContext) =>  Promise.resolve(f);
+        applicationBuilder.defaultRequestDelegate = (f: IFetchContext) =>  Promise.resolve(f);
     });
 
     test("basic", async (done) => {
@@ -46,7 +46,7 @@ describe("Cache tests", () => {
     test("respondWith only called once", async (done) => {
         let callCount = 0;
 
-        applicationBuilder.defaultRequestDelegate = (f: FetchContext) =>  {
+        applicationBuilder.defaultRequestDelegate = (f: IFetchContext) =>  {
             f.event.respondWith(Promise.resolve(new Response()));
             return Promise.resolve(f);
         };

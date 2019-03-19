@@ -1,9 +1,9 @@
-import { ILogger, LogLevel } from "./abstractions";
+import { ILogger, LogLevel } from "../abstractions";
 
 // tslint:disable-next-line:no-empty
 const noop = () => {};
 
-export class Logger implements ILogger {
+export class DefaultLogger implements ILogger {
     public logLevel: LogLevel = LogLevel.Info;
 
     constructor() {

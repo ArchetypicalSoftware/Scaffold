@@ -1,30 +1,12 @@
-import { EventToken, EventTokenSource, FetchContext, IApplicationLifetime, ILogger, IServiceCollection, IServiceWorkerBuilder,
-    IServiceWorkerConfiguration, IStartup, LogLevel, RequestDelegate, StartupFactory, ILoggingBuilder } from "./abstractions";
-import { ApplicationBuilder } from "./application-builder/application-builder";
-import { Logger } from "./logger";
-import { ServiceCollection } from "./service-collection/service-collection";
-import { ServiceProvider } from "./service-collection/service-provider";
-
-class ApplicationLifetime implements IApplicationLifetime {
-    public activateEventSource: EventTokenSource;
-    public installEventSource: EventTokenSource;
-
-    public activating: EventToken;
-    public installing: EventToken;
-
-    constructor() {
-        this.activateEventSource = new EventTokenSource();
-        this.installEventSource = new EventTokenSource();
-
-        this.activating = this.activateEventSource.token;
-        this.installing = this.installEventSource.token;
-    }
-}
-
-class LoggingBuilder implements ILoggingBuilder {
-    public logLevel: LogLevel | null = null;    
-    public loggerFactory: (() => ILogger) | null = null;  
-}
+import { IFetchContext, ILogger, ILoggingBuilder, IServiceCollection,
+    IServiceWorkerBuilder, IServiceWorkerConfiguration, IStartup, LogLevel, RequestDelegate, StartupFactory } from "../abstractions";
+import { ApplicationBuilder } from "../application-builder/application-builder";
+import { FetchContext } from "../fetch/fetch-context";
+import { DefaultLogger } from "../internal/default-logger";
+import { ServiceCollection } from "../service-collection/service-collection";
+import { ServiceProvider } from "../service-collection/service-provider";
+import { ApplicationLifetime } from "./application-lifetime";
+import { LoggingBuilder } from "./logging-builder";
 
 export class ServiceWorkerBuilder implements IServiceWorkerBuilder {
     private startupType: StartupFactory<IStartup> | null;
@@ -44,7 +26,7 @@ export class ServiceWorkerBuilder implements IServiceWorkerBuilder {
         this.applicationLifetime = new ApplicationLifetime();
         this.services.addSingleton("IApplicationLifetime", () => this.applicationLifetime);
 
-        this.logger = new Logger();
+        this.logger = new DefaultLogger();
         this.services.addSingleton("ILogger", () => this.logger);
     }
 
@@ -55,8 +37,6 @@ export class ServiceWorkerBuilder implements IServiceWorkerBuilder {
 
         if (loggingBuilder.loggerFactory !== null) {
             this.logger = loggingBuilder.loggerFactory();
-
-            // Check if type changed
         }
 
         if (loggingBuilder.logLevel !== null) {
@@ -128,7 +108,7 @@ export class ServiceWorkerBuilder implements IServiceWorkerBuilder {
 
         self.addEventListener("fetch", (event) => {
             (event as ExtendableEvent).waitUntil((async () => {
-                const fetchContext: FetchContext = new FetchContext(event as FetchEvent, serviceProvider);
+                const fetchContext: IFetchContext = new FetchContext(event as FetchEvent, serviceProvider);
                 const startTime = performance.now();
                 let timeElapsed: string = "";
 

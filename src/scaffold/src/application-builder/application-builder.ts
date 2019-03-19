@@ -1,4 +1,4 @@
-import { FetchContext, IApplicationBuilder, ILogger, IServiceProvider, IServiceWorkerConfiguration, LogLevel, 
+import { IApplicationBuilder, IFetchContext, IServiceProvider, IServiceWorkerConfiguration, LogLevel, 
     RequestDelegate } from "../abstractions";
 
 export class ApplicationBuilder implements IApplicationBuilder {
@@ -14,7 +14,7 @@ export class ApplicationBuilder implements IApplicationBuilder {
         this.applicationServices = applicationServices;
         this.config = config;
 
-        this.defaultRequestDelegate = (fetchContext: FetchContext): Promise<FetchContext> => {
+        this.defaultRequestDelegate = (fetchContext: IFetchContext): Promise<IFetchContext> => {
             fetchContext.log(LogLevel.Debug, "Default handler: executing fetch");
             fetchContext.response = fetch(fetchContext.request);
             fetchContext.event.respondWith(fetchContext.response);
@@ -43,9 +43,9 @@ export class ApplicationBuilder implements IApplicationBuilder {
         return this;
     }
 
-    public useNext(middleware: (fetchContext: FetchContext, next: () => Promise<FetchContext>) => Promise<FetchContext>): IApplicationBuilder {
+    public useNext(middleware: (fetchContext: IFetchContext, next: () => Promise<IFetchContext>) => Promise<IFetchContext>): IApplicationBuilder {
         this.use((next: RequestDelegate) => {
-            return (fetchContext: FetchContext) => {
+            return (fetchContext: IFetchContext) => {
                 const simpleNext = () => next(fetchContext);
                 return middleware(fetchContext, simpleNext);
             };

@@ -136,5 +136,6 @@ export class FetchEvent extends ExtendableEvent {
         super();
         this.request = request;
     }
+    // tslint:disable-next-line:no-empty
     public respondWith(r: Promise<Response>): void {}
 }

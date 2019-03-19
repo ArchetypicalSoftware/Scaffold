@@ -1,19 +1,9 @@
-import { FetchContext, LogLevel, RequestDelegate } from "../abstractions";
-
-export type CacheStrategy = (key?: string) => (fetchContext: FetchContext) => Promise<Response>;
-
-interface ICacheStrategies {
-    networkOnly: CacheStrategy;
-    cacheOnly: CacheStrategy;
-    cacheFirst: CacheStrategy;
-    networkFirst: CacheStrategy;
-    backgroundFetch: CacheStrategy;
-}
+import { ICacheStrategies, IFetchContext, LogLevel } from "../abstractions";
 
 // tslint:disable-next-line:variable-name
 export const CacheStrategies: ICacheStrategies = {
     backgroundFetch: (key?: string) => {
-        return async (fetchContext: FetchContext) => {
+        return async (fetchContext: IFetchContext) => {
             fetchContext.log(LogLevel.Debug, "CacheStrategy: backgroundFetch");
 
             const cache = await caches.open(key!);
@@ -28,7 +18,7 @@ export const CacheStrategies: ICacheStrategies = {
         };
     },
     cacheFirst: (key?: string) => {
-        return async (fetchContext: FetchContext) => {
+        return async (fetchContext: IFetchContext) => {
             fetchContext.log(LogLevel.Debug, "CacheStrategy: cacheFirst");
             
             const cache = await caches.open(key!);
@@ -44,7 +34,7 @@ export const CacheStrategies: ICacheStrategies = {
         };
     },
     cacheOnly: (key?: string) => {
-        return async (fetchContext: FetchContext) => {
+        return async (fetchContext: IFetchContext) => {
             fetchContext.log(LogLevel.Debug, "CacheStrategy: cacheOnly");
             
             const cache = await caches.open(key!);
@@ -52,7 +42,7 @@ export const CacheStrategies: ICacheStrategies = {
         };
     },
     networkFirst: (key?: string) => {
-        return async (fetchContext: FetchContext) => {
+        return async (fetchContext: IFetchContext) => {
             fetchContext.log(LogLevel.Debug, "CacheStrategy: networkFirst");
             
             let response = await fetch(fetchContext.request);
@@ -66,7 +56,7 @@ export const CacheStrategies: ICacheStrategies = {
         };
     },
     networkOnly: (key?: string) => {
-        return (fetchContext: FetchContext) => {
+        return (fetchContext: IFetchContext) => {
             fetchContext.log(LogLevel.Debug, "CacheStrategy: networkOnly");
             
             return fetch(fetchContext.request);

@@ -1,4 +1,6 @@
-import { FetchContext, IApplicationBuilder, ICacheClearOptions, IMiddleware, LogLevel, MiddlewareFactory, RequestDelegate } from "./abstractions";
+// Application Builder
+
+import { IApplicationBuilder, ICacheClearOptions, IFetchContext, IMiddleware, LogLevel, MiddlewareFactory, RequestDelegate } from "./abstractions";
 import { ApplicationBuilder } from "./application-builder/application-builder";
 import "./application-builder/cache-extensions";
 import "./application-builder/claim-clients-extensions";
@@ -6,29 +8,36 @@ import "./application-builder/clear-cache-on-update-extensions";
 import "./application-builder/install-cache-extensions";
 import "./application-builder/map-extensions";
 import "./application-builder/middleware-extensions";
-import { Route, RouteVariables } from "./application-builder/route";
 import "./application-builder/use-when-extensions";
+import { RouteVariables } from "./internal/route";
 
-export { FetchContext, IApplicationBuilder, IMiddleware, MiddlewareFactory, RequestDelegate, ApplicationBuilder, 
-    Route, RouteVariables, ICacheClearOptions, LogLevel };
+export { IFetchContext, IApplicationBuilder, IMiddleware, MiddlewareFactory, RequestDelegate, ApplicationBuilder, 
+    RouteVariables, ICacheClearOptions, LogLevel };
+
+// Service Collection
 
 import { IServiceCollection, IServiceProvider } from "./abstractions";
 import "./service-collection/configure-extension";
 import { ServiceCollection } from "./service-collection/service-collection";
-import { ServiceProvider } from "./service-collection/service-provider";
 
-export { IServiceCollection, IServiceProvider, ServiceCollection, ServiceProvider };
+export { IServiceCollection, IServiceProvider, ServiceCollection };
 
-import { ILogger, ILoggingBuilder, IServiceWorkerBuilder, IStartup, StartupFactory } from "./abstractions";
-import { ServiceWorker } from "./service-worker";
-import { ServiceWorkerBuilder } from "./service-worker-builder";
+// Hosting
 
-export { ILogger, ILoggingBuilder, IServiceWorkerBuilder, IStartup, StartupFactory, ServiceWorkerBuilder, ServiceWorker };
+import { IServiceWorkerBuilder, IStartup, StartupFactory } from "./abstractions";
+import { ServiceWorker } from "./hosting/service-worker";
 
-import { CacheStrategies, CacheStrategy } from "./application-builder/cache-strategies";
+export { IServiceWorkerBuilder, IStartup, StartupFactory, ServiceWorker };
+
+// Logging
+
+import { ILogger, ILoggingBuilder } from "./abstractions";
+
+export { ILogger, ILoggingBuilder };
+
+// Cache Strategies
+
+import { CacheStrategy } from "./abstractions";
+import { CacheStrategies } from "./cache-strategies/cache-strategies";
 
 export { CacheStrategy, CacheStrategies };
-
-import { Logger } from "./logger"
-
-export { Logger };

@@ -1,14 +1,15 @@
-import { FetchContext, IApplicationBuilder, IServiceProvider, IServiceWorkerConfiguration, RequestDelegate } from "../../abstractions";
-import { FetchEvent, Request, Response } from "../service-worker.mocks"
-import { ApplicationBuilder } from "./../../application-builder/application-builder";
+import { IApplicationBuilder, IFetchContext, IServiceProvider, IServiceWorkerConfiguration, RequestDelegate } from "../../src/abstractions";
+import { FetchEvent, Request } from "../service-worker.mocks";
+import { ApplicationBuilder } from "./../../src/application-builder/application-builder";
+import { FetchContext } from "./../../src/fetch/fetch-context";
 
 describe("Application Builder tests", () => {
     let applicationBuilder: IApplicationBuilder;
-    let fetchContext: FetchContext;
+    let fetchContext: IFetchContext;
 
     beforeEach(() => {
         applicationBuilder = new ApplicationBuilder(null as unknown as IServiceWorkerConfiguration, null as unknown as IServiceProvider);
-        applicationBuilder.defaultRequestDelegate = (f: FetchContext) => Promise.resolve(f);
+        applicationBuilder.defaultRequestDelegate = (f: IFetchContext) => Promise.resolve(f);
         fetchContext = new FetchContext(new FetchEvent(new Request("/testpath")));
     });
 
@@ -16,7 +17,7 @@ describe("Application Builder tests", () => {
         let result = "";
 
         applicationBuilder.use((requestDelegate: RequestDelegate) => {
-            return async (f: FetchContext) => {
+            return async (f: IFetchContext) => {
                 result = f.request.url;
                 return requestDelegate(f);
             };
@@ -32,7 +33,7 @@ describe("Application Builder tests", () => {
     test("run", async (done) => {
         let result = "";
 
-        applicationBuilder.run((f: FetchContext) => {
+        applicationBuilder.run((f: IFetchContext) => {
             result = f.request.url;
             return Promise.resolve(f);
         });
@@ -47,7 +48,7 @@ describe("Application Builder tests", () => {
     test("useFunc", async (done) => {
         let result = "";
 
-        applicationBuilder.useNext((f: FetchContext, next: () => Promise<FetchContext>) => {
+        applicationBuilder.useNext((f: IFetchContext, next: () => Promise<IFetchContext>) => {
             result = f.request.url;
             return next();
         });
@@ -70,18 +71,18 @@ describe("Application Builder tests", () => {
         const results: string[] = [];
 
         applicationBuilder.use((r: RequestDelegate) => {
-            return async (f: FetchContext) => {
+            return async (f: IFetchContext) => {
                 results.push("result1");
                 return await r(f);
             };
         });
 
-        applicationBuilder.useNext(async (f: FetchContext, next: () => Promise<FetchContext>) => {
+        applicationBuilder.useNext(async (f: IFetchContext, next: () => Promise<IFetchContext>) => {
             results.push("result2");
             return await next();
         });
 
-        applicationBuilder.run(async (f: FetchContext) => {
+        applicationBuilder.run(async (f: IFetchContext) => {
             results.push("result3");
             return Promise.resolve(f);
         });

@@ -1,7 +1,7 @@
-import { FetchContext, IApplicationBuilder, IMiddleware, RequestDelegate } from "../abstractions";
+import { IApplicationBuilder, IFetchContext, IMiddleware, RequestDelegate } from "../abstractions";
+import { Route, RouteVariables } from "../internal/route";
 import { ApplicationBuilder } from "./application-builder";
 import "./middleware-extensions";
-import { Route, RouteVariables } from "./route";
 
 export interface IMapSettings {
     methods: Array<"GET" | "POST" | "PUT" | "DELETE" | "HEAD">;
@@ -10,10 +10,10 @@ export interface IMapSettings {
 class MapOptions {
     public branch: RequestDelegate;
     public routes: Route[];
-    public predicate: ((fetchContext: FetchContext, routeVariables: RouteVariables) => boolean) | null;
+    public predicate: ((fetchContext: IFetchContext, routeVariables: RouteVariables) => boolean) | null;
 
     constructor(branch: RequestDelegate, routes: Route[],
-                predicate: ((fetchContext: FetchContext, routeVariables: RouteVariables) => boolean) | null = null) {
+                predicate: ((fetchContext: IFetchContext, routeVariables: RouteVariables) => boolean) | null = null) {
         this.branch = branch;
         this.routes = routes;
         this.predicate = predicate;
@@ -29,7 +29,7 @@ class MapMiddleware implements IMiddleware {
         this.options = options;
     }
 
-    public async invokeAsync(fetchContext: FetchContext): Promise<FetchContext> {
+    public async invokeAsync(fetchContext: IFetchContext): Promise<IFetchContext> {
         // tslint:disable-next-line:prefer-for-of
         for (let i = 0; i < this.options.routes.length; i++) {
             const route = this.options.routes[i];
@@ -53,7 +53,7 @@ class MapMiddleware implements IMiddleware {
 declare module "./../abstractions" {
     interface IApplicationBuilder {
         map(path: string | string[], configuration: (applicationBuilder: IApplicationBuilder) => void, settings?: IMapSettings): IApplicationBuilder;
-        mapWhen(path: string | string[], predicate: (fetchContext: FetchContext, routeVariables: RouteVariables) => boolean,
+        mapWhen(path: string | string[], predicate: (fetchContext: IFetchContext, routeVariables: RouteVariables) => boolean,
                 configuration: (applicationBuilder: IApplicationBuilder) => void, settings?: IMapSettings): IApplicationBuilder;
     }
 }
@@ -62,7 +62,7 @@ declare module "./application-builder" {
     // tslint:disable-next-line:interface-name
     interface ApplicationBuilder {
         map(path: string | string[], configuration: (applicationBuilder: IApplicationBuilder) => void, settings?: IMapSettings): IApplicationBuilder;
-        mapWhen(path: string | string[], predicate: (fetchContext: FetchContext, routeVariables: RouteVariables) => boolean,
+        mapWhen(path: string | string[], predicate: (fetchContext: IFetchContext, routeVariables: RouteVariables) => boolean,
                 configuration: (applicationBuilder: IApplicationBuilder) => void, settings?: IMapSettings): IApplicationBuilder;
     }
 }
@@ -70,11 +70,11 @@ declare module "./application-builder" {
 ApplicationBuilder.prototype.map = function(path: string | string[],
                                             configuration: (applicationBuilder: IApplicationBuilder) => void,
                                             settings?: IMapSettings): IApplicationBuilder {
-    return this.mapWhen(path, null as unknown as (fetchContext: FetchContext, routeVariables: RouteVariables) => boolean, configuration, settings);
+    return this.mapWhen(path, null as unknown as (fetchContext: IFetchContext, routeVariables: RouteVariables) => boolean, configuration, settings);
 };
 
 ApplicationBuilder.prototype.mapWhen = function(path: string | string[],
-                                                predicate: (fetchContext: FetchContext, routeVariables: RouteVariables) => boolean,
+                                                predicate: (fetchContext: IFetchContext, routeVariables: RouteVariables) => boolean,
                                                 configuration: (applicationBuilder: IApplicationBuilder) => void,
                                                 settings?: IMapSettings): IApplicationBuilder {
     settings = Object.assign({}, {

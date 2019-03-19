@@ -1,6 +1,5 @@
-import { FetchContext, IApplicationBuilder, LogLevel } from "./../abstractions";
+import { CacheStrategy, IApplicationBuilder, IFetchContext, LogLevel } from "./../abstractions";
 import { ApplicationBuilder } from "./application-builder";
-import { CacheStrategy } from "./cache-strategies";
 import { IMapSettings } from "./map-extensions";
 
 export interface ICacheSettings extends IMapSettings {
@@ -28,7 +27,7 @@ ApplicationBuilder.prototype.cache = function(path: string | string[], cacheStra
     const strategy = cacheStrategy(settings.key);
 
     this.map(path, (builder) => {
-        builder.run((fetchContext: FetchContext) => {
+        builder.run((fetchContext: IFetchContext) => {
             fetchContext.log(LogLevel.Debug, `Cache extension handler matched on path ${path}`);
             fetchContext.response = strategy(fetchContext);
             fetchContext.event.respondWith(fetchContext.response);
