@@ -30,13 +30,13 @@ export class EventTokenSource {
             });
 
             // Wait for all the promises even if there are rejections
-            await Promise.all(promises.map((promise) => {
-                if (promise.catch) {
-                    return promise.catch((e) => {
-                        if (logger) {
-                            logger.error(e);
-                        }
-                    });
+            await Promise.all(promises.map(async (promise) => {
+                try {
+                    return promise;
+                } catch (e) {
+                    if (logger) {
+                        logger.error(e);
+                    }
                 }
             }));
         }

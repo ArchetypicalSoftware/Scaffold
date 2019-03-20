@@ -16,7 +16,7 @@ declare module "./application-builder" {
 
 ApplicationBuilder.prototype.useClearCacheOnUpdate = function(configuration?: (options: ICacheClearOptions) => void): IApplicationBuilder {
     const options = {
-        whitelist: [this.config.version],
+        keysToKeep: [this.config.version],
     } as ICacheClearOptions;
 
     if (configuration) {
@@ -34,7 +34,7 @@ ApplicationBuilder.prototype.useClearCacheOnUpdate = function(configuration?: (o
         for (let i = 0; i < keys.length; i++) {
             const key = keys[i];
 
-            if (options.whitelist.indexOf(key) === -1) {
+            if (options.keysToKeep.indexOf(key) === -1) {
                 logger.debug(`Clearing cache with key ${key}`);
                 await caches.delete(key);
             }

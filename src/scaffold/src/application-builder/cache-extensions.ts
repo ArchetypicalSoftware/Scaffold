@@ -1,14 +1,16 @@
-import { CacheStrategy, IApplicationBuilder, IFetchContext, LogLevel } from "./../abstractions";
+import { CacheStrategy, IApplicationBuilder, IFetchContext, IRouteConfiguration, LogLevel } from "./../abstractions";
+import { RouteVariables } from "./../routing/route-variables";
 import { ApplicationBuilder } from "./application-builder";
-import { IMapSettings } from "./map-extensions";
 
-export interface ICacheSettings extends IMapSettings {
-    key?: string;
+export interface ICacheSettings extends IRouteConfiguration {
+    cacheKey?: string;
 }
 
 declare module "./../abstractions" {
     interface IApplicationBuilder {
         cache(path: string | string[], cacheStrategy: CacheStrategy, settings?: ICacheSettings): IApplicationBuilder;
+        cacheWhen(path: string | string[], predicate: (fetchContext: IFetchContext, routeVariables: RouteVariables) => boolean, 
+                  cacheStrategy: CacheStrategy, settings?: ICacheSettings): IApplicationBuilder;
     }
 }
 
@@ -16,17 +18,25 @@ declare module "./application-builder" {
     // tslint:disable-next-line:interface-name
     interface ApplicationBuilder {
         cache(path: string | string[], cacheStrategy: CacheStrategy, settings?: ICacheSettings): IApplicationBuilder;
+        cacheWhen(path: string | string[], predicate: (fetchContext: IFetchContext, routeVariables: RouteVariables) => boolean, 
+                  cacheStrategy: CacheStrategy, settings?: ICacheSettings): IApplicationBuilder;
     }
 }
 
 ApplicationBuilder.prototype.cache = function(path: string | string[], cacheStrategy: CacheStrategy, settings?: ICacheSettings): IApplicationBuilder {
+    return this.cacheWhen(path, null as unknown as (fetchContext: IFetchContext, routeVariables: RouteVariables) => boolean, cacheStrategy, settings);
+};
+
+ApplicationBuilder.prototype.cacheWhen = function(path: string | string[], 
+                                                  predicate: (fetchContext: IFetchContext, routeVariables: RouteVariables) => boolean, 
+                                                  cacheStrategy: CacheStrategy, settings?: ICacheSettings): IApplicationBuilder {
     settings = Object.assign({}, {
-        key: this.config.version,
+        cacheKey: this.config.version,
     } as ICacheSettings, settings) as ICacheSettings;
 
-    const strategy = cacheStrategy(settings.key);
+    const strategy = cacheStrategy(settings.cacheKey);
 
-    this.map(path, (builder) => {
+    this.mapWhen(path, predicate, (builder) => {
         builder.run((fetchContext: IFetchContext) => {
             fetchContext.log(LogLevel.Debug, `Cache extension handler matched on path ${path}`);
             fetchContext.response = strategy(fetchContext);

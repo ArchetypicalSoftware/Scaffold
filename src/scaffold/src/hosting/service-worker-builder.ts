@@ -2,11 +2,11 @@ import { IFetchContext, ILogger, ILoggingBuilder, IServiceCollection,
     IServiceWorkerBuilder, IServiceWorkerConfiguration, IStartup, LogLevel, RequestDelegate, StartupFactory } from "../abstractions";
 import { ApplicationBuilder } from "../application-builder/application-builder";
 import { FetchContext } from "../fetch/fetch-context";
-import { DefaultLogger } from "../internal/default-logger";
+import { DefaultLogger } from "../logging/default-logger";
+import { LoggingBuilder } from "../logging/logging-builder";
 import { ServiceCollection } from "../service-collection/service-collection";
 import { ServiceProvider } from "../service-collection/service-provider";
 import { ApplicationLifetime } from "./application-lifetime";
-import { LoggingBuilder } from "./logging-builder";
 
 export class ServiceWorkerBuilder implements IServiceWorkerBuilder {
     private startupType: StartupFactory<IStartup> | null;
@@ -14,6 +14,7 @@ export class ServiceWorkerBuilder implements IServiceWorkerBuilder {
     private config: IServiceWorkerConfiguration;
     private applicationLifetime: ApplicationLifetime;
     private logger: ILogger;
+    private singletonContainer: Map<string, object>;
 
     constructor(config: IServiceWorkerConfiguration) {
         this.config = Object.assign({}, {
@@ -28,6 +29,8 @@ export class ServiceWorkerBuilder implements IServiceWorkerBuilder {
 
         this.logger = new DefaultLogger();
         this.services.addSingleton("ILogger", () => this.logger);
+
+        this.singletonContainer = new Map<string, object>();
     }
 
     public configureLogging(configuration: (builder: ILoggingBuilder) => void): IServiceWorkerBuilder {
@@ -63,7 +66,7 @@ export class ServiceWorkerBuilder implements IServiceWorkerBuilder {
             startup.configureServices(this.services);
         }
 
-        const serviceProvider = new ServiceProvider(this.services.serviceDescriptors);
+        const serviceProvider = new ServiceProvider(this.services.serviceDescriptors, this.singletonContainer);
 
         const applicationBuilder = new ApplicationBuilder(this.config, serviceProvider);
 
@@ -108,7 +111,8 @@ export class ServiceWorkerBuilder implements IServiceWorkerBuilder {
 
         self.addEventListener("fetch", (event) => {
             (event as ExtendableEvent).waitUntil((async () => {
-                const fetchContext: IFetchContext = new FetchContext(event as FetchEvent, serviceProvider);
+                const fetchContext: IFetchContext = new FetchContext(event as FetchEvent, 
+                    new ServiceProvider(this.services.serviceDescriptors, this.singletonContainer));
                 const startTime = performance.now();
                 let timeElapsed: string = "";
 

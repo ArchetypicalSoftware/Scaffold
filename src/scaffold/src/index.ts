@@ -1,6 +1,7 @@
 // Application Builder
 
-import { IApplicationBuilder, ICacheClearOptions, IFetchContext, IMiddleware, LogLevel, MiddlewareFactory, RequestDelegate } from "./abstractions";
+import { IApplicationBuilder, ICacheClearOptions, IFetchContext, IMiddleware, IRouteVariables, 
+    LogLevel, MiddlewareFactory, RequestDelegate } from "./abstractions";
 import { ApplicationBuilder } from "./application-builder/application-builder";
 import "./application-builder/cache-extensions";
 import "./application-builder/claim-clients-extensions";
@@ -9,10 +10,9 @@ import "./application-builder/install-cache-extensions";
 import "./application-builder/map-extensions";
 import "./application-builder/middleware-extensions";
 import "./application-builder/use-when-extensions";
-import { RouteVariables } from "./internal/route";
 
 export { IFetchContext, IApplicationBuilder, IMiddleware, MiddlewareFactory, RequestDelegate, ApplicationBuilder, 
-    RouteVariables, ICacheClearOptions, LogLevel };
+    IRouteVariables, ICacheClearOptions, LogLevel };
 
 // Service Collection
 

@@ -7,15 +7,17 @@ class MyService {}
 describe("Service Collection tests", () => {
     let serviceCollection: IServiceCollection;
     const serviceName: string = "MyService";
+    const container = new Map<string, object>();
 
     beforeEach(() => {
         serviceCollection = new ServiceCollection();
+        container.clear();
     });
 
-    test("transient", () => {
+    test("transient", () => {        
         serviceCollection.addTransient<MyService>(serviceName, () => new MyService());
 
-        const provider = new ServiceProvider(serviceCollection.serviceDescriptors);
+        const provider = new ServiceProvider(serviceCollection.serviceDescriptors, container);
 
         const instance1 = provider.getInstance<MyService>(serviceName);
         const instance2 = provider.getInstance<MyService>(serviceName);
@@ -28,7 +30,7 @@ describe("Service Collection tests", () => {
     test("scoped", () => {
         serviceCollection.addScoped<MyService>(serviceName, () => new MyService());
 
-        const provider = new ServiceProvider(serviceCollection.serviceDescriptors);
+        let provider = new ServiceProvider(serviceCollection.serviceDescriptors, container);
 
         const instance1 = provider.getInstance<MyService>(serviceName);
         const instance2 = provider.getInstance<MyService>(serviceName);
@@ -37,7 +39,8 @@ describe("Service Collection tests", () => {
         expect(instance2).toBeTruthy();
         expect(instance1).toBe(instance2);
 
-        provider.resetScope();
+        provider = new ServiceProvider(serviceCollection.serviceDescriptors, container);
+
         const instance3 = provider.getInstance<MyService>(serviceName);
         const instance4 = provider.getInstance<MyService>(serviceName);
 
@@ -51,7 +54,7 @@ describe("Service Collection tests", () => {
     test("singleton", () => {
         serviceCollection.addSingleton<MyService>(serviceName, () => new MyService());
 
-        const provider = new ServiceProvider(serviceCollection.serviceDescriptors);
+        let provider = new ServiceProvider(serviceCollection.serviceDescriptors, container);
 
         const instance1 = provider.getInstance<MyService>(serviceName);
         const instance2 = provider.getInstance<MyService>(serviceName);
@@ -60,7 +63,8 @@ describe("Service Collection tests", () => {
         expect(instance2).toBeTruthy();
         expect(instance1).toBe(instance2);
 
-        provider.resetScope();
+        provider = new ServiceProvider(serviceCollection.serviceDescriptors, container);
+
         const instance3 = provider.getInstance<MyService>(serviceName);
         const instance4 = provider.getInstance<MyService>(serviceName);
 
@@ -86,14 +90,14 @@ describe("Service Collection tests", () => {
     });
 
     test("getInstance error - missing key", () => {
-        const provider = new ServiceProvider(serviceCollection.serviceDescriptors);
+        const provider = new ServiceProvider(serviceCollection.serviceDescriptors, container);
         expect(() => provider.getInstance<MyService>("a"))
             .toThrowError("No service with a key 'a' was found in the configured service collection.");
     });
 
     test("getInstance error - null instance", () => {
         serviceCollection.addTransient<MyService>(serviceName, () => null as unknown as object);
-        const provider = new ServiceProvider(serviceCollection.serviceDescriptors);
+        const provider = new ServiceProvider(serviceCollection.serviceDescriptors, container);
         expect(() => provider.getInstance<MyService>(serviceName))
             .toThrowError(`Service factory for key '${serviceName}' resulted in a null instance.`);
     });

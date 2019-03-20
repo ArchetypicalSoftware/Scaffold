@@ -7,10 +7,10 @@ export class ServiceProvider implements IServiceProvider {
     private scopedContainer: Map<string, object>;
     private singletonContainer: Map<string, object>;
 
-    constructor(descriptors: Map<string, IServiceDescriptor>) {
+    constructor(descriptors: Map<string, IServiceDescriptor>, singletonContainer: Map<string, object>) {
         this.services = new Map<string, ServiceInstanceWrapper>();
         this.scopedContainer = new Map<string, object>();
-        this.singletonContainer = new Map<string, object>();
+        this.singletonContainer = singletonContainer;
 
         for (const descriptor of descriptors.values()) {
             let container: Map<string, object> | null = null;
@@ -43,9 +43,5 @@ export class ServiceProvider implements IServiceProvider {
         }
 
         return instance as T;
-    }
-
-    public resetScope(): void {
-        this.scopedContainer.clear();
     }
 }

@@ -1,4 +1,12 @@
-export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "HEAD" | "CONNECT" | "OPTIONS" | "TRACE" | "PATCH";
+import { HttpMethod, IRouteConfiguration, IRouteVariables } from "../abstractions";
+import { RouteVariables } from "./route-variables";
+
+enum RouteElementType {
+    Static,
+    Variable,
+    Wildcard,
+    DoubleWildcard,
+}
 
 class UrlEx extends URL {
     public fileExtension: string = "";
@@ -20,13 +28,6 @@ class UrlEx extends URL {
             }
         }
     }
-}
-
-enum RouteElementType {
-    Static,
-    Variable,
-    Wildcard,
-    DoubleWildcard,
 }
 
 const variableRegex: RegExp = new RegExp("^{([^}]+)}$");
@@ -68,15 +69,23 @@ class RouteElement {
     }
 }
 
-export class RouteVariables {
-    public path: Map<string, string>;
-    public query: Map<string, string>;
-    public url: URL;
+const isOptionalRegex: RegExp = RegExp("^\[.*\]$");
 
-    constructor(path: Map<string, string>, query: Map<string, string>, url: URL) {
-        this.path = path;
-        this.query = query;
-        this.url = url;
+class QueryParameterDefinition {
+    public name: string;
+    public routeElement: RouteElement;
+    public isOptional: boolean;
+
+    constructor(name: string, value: string) {
+        this.isOptional = false;
+        this.routeElement = new RouteElement(value);
+
+        if (isOptionalRegex.test(name)) {
+            this.isOptional = true;
+            name = name.slice(1, name.length - 1);
+        }
+
+        this.name = name;
     }
 }
 
@@ -84,29 +93,34 @@ export class Route {
     public path: string;
     private elements: RouteElement[];
     private fileExtension: RouteElement | null;
-    private query: Map<string, RouteElement>;
+    private query: Map<string, QueryParameterDefinition>;
     private url: UrlEx;
-    private methods: HttpMethod[];
+    private configuration: IRouteConfiguration;
 
-    constructor(path: string, base?: string | URL | undefined, methods?: HttpMethod[]) {
+    constructor(path: string, base?: string | URL | undefined, configuration?: IRouteConfiguration) {
+        this.configuration = Object.assign({}, {
+            allowUnspecifiedParameters: true,
+            methods: ["GET"],
+        } as IRouteConfiguration, configuration);
+
         this.path = path;
         this.url = new UrlEx(path, base);
 
-        this.methods = (methods || ["GET"]).map((x) => x.toUpperCase()) as HttpMethod[];
+        this.configuration.methods = this.configuration!.methods!.map((x) => x.toUpperCase()) as HttpMethod[];
 
         this.elements = [];
         this.fileExtension = this.url.fileExtension ? new RouteElement(this.url.fileExtension) : null;
-        this.query = new Map<string, RouteElement>();
+        this.query = new Map<string, QueryParameterDefinition>();
 
         this.url.pathTokens.forEach((x) => this.elements.push(new RouteElement(x)));
 
         this.url.searchParams.forEach((value: string, key: string) => {
-            this.query.set(key, new RouteElement(value));
+            this.query.set(key, new QueryParameterDefinition(key, value));
         });
     }
 
     public isMatch(request: Request): boolean {
-        if ((this.methods as string[]).indexOf(request.method.toUpperCase()) === -1) {
+        if ((this.configuration.methods as string[]).indexOf(request.method.toUpperCase()) === -1) {
             return false;
         }
 
@@ -148,16 +162,18 @@ export class Route {
                 return false;
             }
 
-            if (this.fileExtension && (!url.fileExtension || !this.fileExtension.isMatch(url.fileExtension))) {
+            if ((this.fileExtension && !url.fileExtension)
+                || (!this.fileExtension && url.fileExtension)
+                || (this.fileExtension && url.fileExtension && !this.fileExtension.isMatch(url.fileExtension))) {
                 return false;
             }
         }
 
         let queryMatch: boolean = true;
-        this.query.forEach((routeElement: RouteElement, key: string) => {
+        this.query.forEach((queryParam: QueryParameterDefinition, key: string) => {
             const value = url.searchParams.get(key);
 
-            if (value && !routeElement.isMatch(value)) {
+            if (value && !queryParam.routeElement.isMatch(value)) {
                 queryMatch = false;
             }
         });
@@ -165,9 +181,13 @@ export class Route {
         return queryMatch;
     }
 
-    public getVariables(url: string, base?: string | undefined): RouteVariables {
+    public getVariables(url: string, base?: string | undefined): IRouteVariables {
         const urlEx = new UrlEx(url, base);
         const variables = new RouteVariables(new Map<string, string>(), new Map<string, string>(), urlEx);
+
+        if (this.fileExtension && this.fileExtension.type === RouteElementType.Variable) {
+            variables.path.set(this.fileExtension.value, urlEx.fileExtension);
+        }
 
         urlEx.pathTokens.forEach((x, i) => {
             if (this.elements[i].type === RouteElementType.Variable) {
@@ -175,8 +195,8 @@ export class Route {
             }
         });
 
-        this.query.forEach((routeElement: RouteElement, key: string) => {
-            if (routeElement.type === RouteElementType.Variable) {
+        this.query.forEach((queryParam: QueryParameterDefinition, key: string) => {
+            if (queryParam.routeElement.type === RouteElementType.Variable) {
                 const value = urlEx.searchParams.get(key);
 
                 if (value) {
