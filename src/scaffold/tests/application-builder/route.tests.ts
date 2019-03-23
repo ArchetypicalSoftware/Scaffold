@@ -1,5 +1,6 @@
 import { Route } from "./../../src/routing/route";
 import { Request } from "./../service-worker.mocks";
+import { IRouteConfiguration } from "../../src/abstractions";
 
 describe("Route tests", () => {
     const base = "https://www.example.com";
@@ -23,11 +24,11 @@ describe("Route tests", () => {
 
     test("path variables", () => {
         const route = new Route("/Area/{controller}/{action}", base);
-        const url = `${base}/Area/SomeController/SomeAction`;
+        const request = new Request(`${base}/Area/SomeController/SomeAction`);
 
-        expect(route.isMatch(new Request(url))).toBe(true);
+        expect(route.isMatch(request)).toBe(true);
 
-        const variables = route.getVariables(url);
+        const variables = route.getVariables(request);
         expect(variables).toBeTruthy();
         expect(variables.path.size).toBe(2);
         expect(variables.path.get("controller")).toBe("SomeController");
@@ -36,16 +37,16 @@ describe("Route tests", () => {
 
     test("query variables", () => {
         const route = new Route("/Path?param1={param1Value}&param2=notavariable", base);
-        expect(route.getVariables(`${base}/Path`).query.size).toBe(0);
-        expect(route.getVariables(`${base}/Path?param2=value`).query.size).toBe(0);
-        expect(route.getVariables(`${base}/Path?param1=value`).query.size).toBe(1);
-        expect(route.getVariables(`${base}/Path?param1=value`).query.get("param1")).toBe("value");
+        const request = new Request(`${base}/Path?param1=value&param2=notavariable`);
+
+        expect(route.getVariables(request).query.size).toBe(1);
+        expect(route.getVariables(request).query.get("param1")).toBe("value");
     });
 
     test("query match", () => {
         const route = new Route("/Path?param1=value", base);
 
-        expect(route.isMatch(new Request(`${base}/Path`))).toBe(true);
+        expect(route.isMatch(new Request(`${base}/Path`))).toBe(false);
         expect(route.isMatch(new Request(`${base}/Path?param1=value`))).toBe(true);
         expect(route.isMatch(new Request(`${base}/Path?param1=notvalue`))).toBe(false);
         expect(route.isMatch(new Request(`${base}/Path?param2=value`))).toBe(false);
@@ -62,6 +63,7 @@ describe("Route tests", () => {
         const route = new Route("/**/file.js", base);
 
         expect(route.isMatch(new Request(`${base}/asdf/asdf/asdf/file.js`))).toBe(true);
+        expect(route.isMatch(new Request(`${base}/file.js`))).toBe(true);
         expect(route.isMatch(new Request(`${base}/asdf/asdf/asdf/notfile.js`))).toBe(false);
     });
 
@@ -70,6 +72,8 @@ describe("Route tests", () => {
 
         expect(route.isMatch(new Request(`${base}/asdf/asdf/asdf/file.js`))).toBe(true);
         expect(route.isMatch(new Request(`${base}/asdf/asdf/asdf`))).toBe(true);
+        expect(route.isMatch(new Request(`${base}/asdf/asdf/asdf?param=value`))).toBe(true);
+        expect(route.isMatch(new Request(`${base}/`))).toBe(true);
     });
 
     test("wildcard double wildcard combo", () => {
@@ -82,27 +86,47 @@ describe("Route tests", () => {
 
         expect(route.isMatch(new Request(`${base}/asdf/asdf/asdf/asdf.js`))).toBe(true);
         expect(route.isMatch(new Request(`${base}/asdf/asdf/asdf/asdf.css`))).toBe(true);
+        expect(route.isMatch(new Request(`${base}/`))).toBe(false);
     });
 
     test("wildcard route and variables", () => {
-        let route = new Route("/**/{param1}.js", base);
-        const url = `${base}/asdf/asdf/asdf/asdf.js`;
+        const route = new Route("/**/{param1}.js", base);
+        let request = new Request(`${base}/asdf/asdf/asdf/asdf.js`);        
 
-        expect(route.isMatch(new Request(url))).toBe(true);
+        expect(route.isMatch(request)).toBe(true);
 
-        expect(route.getVariables(url).path.size).toBe(1);
-        expect(route.getVariables(url).path.get("param1")).toBe("asdf");
+        expect(route.getVariables(request).path.size).toBe(1);
+        expect(route.getVariables(request).path.get("param1")).toBe("asdf");
+
+        request = new Request(`${base}/asdf.js`);
+
+        expect(route.isMatch(request)).toBe(true);
+
+        expect(route.getVariables(request).path.size).toBe(1);
+        expect(route.getVariables(request).path.get("param1")).toBe("asdf");
     });
 
-    // TODO test the following
-    /*
-    Route: "/js/site.js?param=value"        Url: "/js/site.js"
-    Route: "/js/site.js"                    Url: "/js/site.js?param=value"
-    Route: "/js/site.js?param={paramValue}" Url: "/js/site.js"
-    Route: "/js/site.js?param={paramValue}" Url: "/js/site.js?param2=value2"
-    Route: "/js/site.js?param=value"        Url: "/js/site.js?param=value&param2=value2"
+    test("file extension variable tests", () => {
+        const route = new Route("/*.{fileExtension}", base);
+        const request = new Request(`${base}/asdf.js`);
+        
+        expect(route.getVariables(request).path.size).toBe(1);
+        expect(route.getVariables(request).path.get("fileExtension")).toBe("js");
+    });
 
-    Retest with optional [param]
-    Retest with allowUnspecifiedParameters set to false
-    */
+    test("http method tests", () => {
+        const request = new Request(`${base}/asdf`);
+        
+        let route = new Route("/asdf", base, { methods: ["GET"] } as IRouteConfiguration);
+        expect(route.isMatch(request)).toBe(true);        
+
+        route = new Route("/asdf", base, { methods: ["POST"] } as IRouteConfiguration);
+        expect(route.isMatch(request)).toBe(false);
+
+        route = new Route("/asdf", base, { methods: ["POST", "GET"] } as IRouteConfiguration);
+        expect(route.isMatch(request)).toBe(true);
+
+        route = new Route("/asdf", base, { methods: ["get"] } as any);
+        expect(route.isMatch(request)).toBe(true); 
+    });
 });

@@ -1,12 +1,12 @@
 import { IApplicationBuilder, IFetchContext, RequestDelegate } from "../abstractions";
 import { ApplicationBuilder } from "./application-builder";
 
-declare module "./../abstractions" {
-    interface IApplicationBuilder {
-        useWhen(predicate: (fetchContext: IFetchContext) => boolean,
-                configuration: (applicationBuilder: IApplicationBuilder) => void): IApplicationBuilder;
-    }
-}
+// declare module "./../abstractions" {
+//     interface IApplicationBuilder {
+//         useWhen(predicate: (fetchContext: IFetchContext) => boolean,
+//                 configuration: (applicationBuilder: IApplicationBuilder) => void): IApplicationBuilder;
+//     }
+// }
 
 declare module "./application-builder" {
     // tslint:disable-next-line:interface-name

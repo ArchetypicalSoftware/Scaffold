@@ -3,11 +3,19 @@ import { ApplicationBuilder } from "./application-builder";
 
 declare var clients: Clients;
 
-declare module "./../abstractions" {
-    interface IApplicationBuilder {
-        useClaimClients(): IApplicationBuilder;
-    }
-}
+// declare module "./../abstractions" {
+//     interface IApplicationBuilder {
+
+//         /**
+//          * Attempt to claim all available clients within scope.
+//          * See more at https://developer.mozilla.org/en-US/docs/Web/API/Clients/claim
+//          *
+//          * @returns {IApplicationBuilder}
+//          * @memberof IApplicationBuilder
+//          */
+//         useClaimClients(): IApplicationBuilder;
+//     }
+// }
 
 declare module "./application-builder" {
     // tslint:disable-next-line:interface-name

@@ -52,13 +52,7 @@ export class ApplicationBuilder implements IApplicationBuilder {
         });
         return this;
     }
-
-    /**
-     * Adds a terminal middleware delegate to the application's request pipeline
-     *
-     * @param {RequestDelegate} handler
-     * @memberof ApplicationBuilder
-     */
+    
     public run(handler: RequestDelegate) {
         this.use(() => handler);
     }

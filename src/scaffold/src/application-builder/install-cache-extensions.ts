@@ -1,11 +1,11 @@
 import { IApplicationBuilder, IApplicationLifetime, ILogger } from "../abstractions";
 import { ApplicationBuilder } from "./application-builder";
 
-declare module "./../abstractions" {
-    interface IApplicationBuilder {
-        useInstallCache(urlsToCache: string[], key?: string): IApplicationBuilder;
-    }
-}
+// declare module "./../abstractions" {
+//     interface IApplicationBuilder {
+//         useInstallCache(urlsToCache: string[], key?: string): IApplicationBuilder;
+//     }
+// }
 
 declare module "./application-builder" {
     // tslint:disable-next-line:interface-name

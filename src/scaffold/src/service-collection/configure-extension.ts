@@ -1,10 +1,10 @@
 import { ServiceCollection } from "./service-collection";
 
-declare module "./../abstractions" {
-    interface IServiceCollection {
-        configure<T extends object>(optionsName: string, options: T): void;
-    }
-}
+// declare module "./../abstractions" {
+//     interface IServiceCollection {
+//         configure<T extends object>(optionsName: string, options: T): void;
+//     }
+// }
 
 declare module "./service-collection" {
     // tslint:disable-next-line:interface-name

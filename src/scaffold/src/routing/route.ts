@@ -69,31 +69,11 @@ class RouteElement {
     }
 }
 
-const isOptionalRegex: RegExp = RegExp("^\[.*\]$");
-
-class QueryParameterDefinition {
-    public name: string;
-    public routeElement: RouteElement;
-    public isOptional: boolean;
-
-    constructor(name: string, value: string) {
-        this.isOptional = false;
-        this.routeElement = new RouteElement(value);
-
-        if (isOptionalRegex.test(name)) {
-            this.isOptional = true;
-            name = name.slice(1, name.length - 1);
-        }
-
-        this.name = name;
-    }
-}
-
 export class Route {
     public path: string;
     private elements: RouteElement[];
     private fileExtension: RouteElement | null;
-    private query: Map<string, QueryParameterDefinition>;
+    private query: Map<string, RouteElement>;
     private url: UrlEx;
     private configuration: IRouteConfiguration;
 
@@ -110,12 +90,12 @@ export class Route {
 
         this.elements = [];
         this.fileExtension = this.url.fileExtension ? new RouteElement(this.url.fileExtension) : null;
-        this.query = new Map<string, QueryParameterDefinition>();
+        this.query = new Map<string, RouteElement>();
 
         this.url.pathTokens.forEach((x) => this.elements.push(new RouteElement(x)));
 
         this.url.searchParams.forEach((value: string, key: string) => {
-            this.query.set(key, new QueryParameterDefinition(key, value));
+            this.query.set(key, new RouteElement(value));
         });
     }
 
@@ -157,6 +137,14 @@ export class Route {
             }
         }
 
+        // Check for outstanding double wildcard
+        if (!isEndDoubleWildcard 
+            && routeIndex === this.elements.length - 1 
+            && tokenIndex === url.pathTokens.length) {
+            isEndDoubleWildcard = this.elements[routeIndex].type === RouteElementType.DoubleWildcard;
+        }
+
+        // If not a ending double wildcard, check route lengths, file extension and query parameters
         if (!isEndDoubleWildcard) {
             if (routeIndex !== this.elements.length || tokenIndex !== url.pathTokens.length) {
                 return false;
@@ -167,40 +155,69 @@ export class Route {
                 || (this.fileExtension && url.fileExtension && !this.fileExtension.isMatch(url.fileExtension))) {
                 return false;
             }
+
+            let queryMatch: boolean = true;
+            this.query.forEach((routeElement: RouteElement, key: string) => {
+                const value = url.searchParams.get(key);
+
+                if (!value || !routeElement.isMatch(value)) {
+                    queryMatch = false;
+                }
+            });
+
+            return queryMatch;
         }
 
-        let queryMatch: boolean = true;
-        this.query.forEach((queryParam: QueryParameterDefinition, key: string) => {
-            const value = url.searchParams.get(key);
-
-            if (value && !queryParam.routeElement.isMatch(value)) {
-                queryMatch = false;
-            }
-        });
-
-        return queryMatch;
+        return true;
     }
 
-    public getVariables(url: string, base?: string | undefined): IRouteVariables {
-        const urlEx = new UrlEx(url, base);
-        const variables = new RouteVariables(new Map<string, string>(), new Map<string, string>(), urlEx);
+    public getVariables(request: Request, base?: string | undefined): IRouteVariables {
+        const url = new UrlEx(request.url, base);
+        const variables = new RouteVariables(new Map<string, string>(), new Map<string, string>(), url);
 
-        if (this.fileExtension && this.fileExtension.type === RouteElementType.Variable) {
-            variables.path.set(this.fileExtension.value, urlEx.fileExtension);
+        let routeIndex = 0;
+        let tokenIndex = 0;
+
+        while (routeIndex < this.elements.length && tokenIndex < url.pathTokens.length) {
+            const element = this.elements[routeIndex];
+
+            if (element.type === RouteElementType.DoubleWildcard) {
+                if (routeIndex === this.elements.length - 1) {
+                    // This is the last element so we can return
+                    // e.g. /Path/To/Check/**
+                    return variables;
+                } else {
+                    // This is the second to last element
+                    // e.g. /Path/To/Check/**/file.js or /Path/To/Check/**/*.js
+                    routeIndex++;
+                    tokenIndex = url.pathTokens.length - 1;
+                    continue;
+                }
+            } 
+            
+            if (element.type === RouteElementType.Variable) {
+                variables.path.set(element.value, url.pathTokens[tokenIndex]);
+            } 
+
+            routeIndex++;
+            tokenIndex++;
         }
 
-        urlEx.pathTokens.forEach((x, i) => {
-            if (this.elements[i].type === RouteElementType.Variable) {
-                variables.path.set(this.elements[i].value, x);
-            }
-        });
+        // Check for outstanding double wildcard
+        if (routeIndex === this.elements.length - 1 && tokenIndex === url.pathTokens.length) {
+            return variables;
+        }
 
-        this.query.forEach((queryParam: QueryParameterDefinition, key: string) => {
-            if (queryParam.routeElement.type === RouteElementType.Variable) {
-                const value = urlEx.searchParams.get(key);
+        if (this.fileExtension && this.fileExtension.type === RouteElementType.Variable) {
+            variables.path.set(this.fileExtension.value, url.fileExtension);
+        }
+
+        this.query.forEach((routeElement: RouteElement, key: string) => {
+            if (routeElement.type === RouteElementType.Variable) {
+                const value = url.searchParams.get(key);
 
                 if (value) {
-                    variables.query.set(key, urlEx.searchParams.get(key) as string);
+                    variables.query.set(key, url.searchParams.get(key) as string);
                 }
             }
         });

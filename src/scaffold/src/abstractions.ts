@@ -24,9 +24,9 @@ export interface ILogEntry {
 }
 
 /**
- * Context object that is passed through the fetch request pipeline. 
- * This object contains all information relevant to the given request
- * including the request, response and FetchEvent instance.
+ * Context object passed through the fetch request pipeline. 
+ * This object contains information relevant to the current request
+ * including the request object, response object and FetchEvent instance.
  *
  * @export
  * @interface IFetchContext
@@ -124,9 +124,10 @@ export interface IMiddleware {
  * @interface IApplicationBuilder
  */
 export interface IApplicationBuilder {
+
     /**
-     * The final RequestDelegate to be called when no other RequestDelegate
-     * terminates the request pipeline.
+     * The final RequestDelegate to be called when no other RequestDelegates
+     * terminate the request pipeline.
      *
      * @type {RequestDelegate}
      * @memberof IApplicationBuilder
@@ -134,7 +135,7 @@ export interface IApplicationBuilder {
     defaultRequestDelegate: RequestDelegate;
     
     /**
-     * Configuration object
+     * Service worker configuration object
      *
      * @type {IServiceWorkerConfiguration}
      * @memberof IApplicationBuilder
@@ -152,9 +153,9 @@ export interface IApplicationBuilder {
     /**
      * Sets an object to be shared between middleware implementations
      *
-     * @template T
-     * @param {string} key
-     * @param {T} value
+     * @template T Type of property
+     * @param {string} key Name of the property
+     * @param {T} value Value of the property
      * @memberof IApplicationBuilder
      */
     setProperty<T extends object>(key: string, value: T): void;
@@ -162,8 +163,8 @@ export interface IApplicationBuilder {
     /**
      * Gets an object to be shared between middleware implementations
      *
-     * @template T
-     * @param {string} key
+     * @template T Type of the property
+     * @param {string} key Name of the property
      * @returns {T}
      * @memberof IApplicationBuilder
      */
@@ -211,6 +212,114 @@ export interface IApplicationBuilder {
      * @memberof IApplicationBuilder
      */
     run(handler: RequestDelegate): void;
+
+    /********************** Extensions **********************/
+
+    /**
+     * Attempt to claim all available clients within scope.
+     * See more at https://developer.mozilla.org/en-US/docs/Web/API/Clients/claim
+     *
+     * @returns {IApplicationBuilder}
+     * @memberof IApplicationBuilder
+     */
+    useClaimClients(): IApplicationBuilder;
+
+    /**
+     * Clear old cache entries when a new service worker is activated.
+     *
+     * @param {(options: ICacheClearOptions) => void} [configuration] Cache clear options object
+     * @returns {IApplicationBuilder}
+     * @memberof IApplicationBuilder
+     */
+    useClearCacheOnUpdate(configuration?: (options: ICacheClearOptions) => void): IApplicationBuilder;
+
+    /**
+     * Defines the cache strategy for requests that match the provided route(s).
+     *
+     * @param {(string | string[])} path Route(s) to match
+     * @param {CacheStrategy} cacheStrategy Cache strategy to be used
+     * @param {ICacheConfiguration} [settings] Configuration options
+     * @returns {IApplicationBuilder}
+     * @memberof IApplicationBuilder
+     */
+    cache(path: string | string[], 
+          cacheStrategy: CacheStrategy, 
+          settings?: ICacheConfiguration): IApplicationBuilder;
+
+    /**
+     * Defines the cache strategy for requests that match the provided route(s) and predicate.
+     *
+     * @param {(string | string[])} path Route(s) to match
+     * @param {(fetchContext: IFetchContext, routeVariables: IRouteVariables) => boolean} predicate Predicate to further evaluate request
+     * @param {CacheStrategy} cacheStrategy Cache strategy to be used
+     * @param {ICacheConfiguration} [settings] Configuration options
+     * @returns {IApplicationBuilder}
+     * @memberof IApplicationBuilder
+     */
+    cacheWhen(path: string | string[], 
+              predicate: (fetchContext: IFetchContext, routeVariables: IRouteVariables) => boolean, 
+              cacheStrategy: CacheStrategy, 
+              settings?: ICacheConfiguration): IApplicationBuilder;
+
+    /**
+     * Caches assets during install of the service worker.
+     *
+     * @param {string[]} urlsToCache List of assets to cache
+     * @param {string} [key] Key to of the cache to own the assets. Defaults to the version of the Service Worker.
+     * @returns {IApplicationBuilder}
+     * @memberof IApplicationBuilder
+     */
+    useInstallCache(urlsToCache: string[], key?: string): IApplicationBuilder;
+
+    /**
+     * Injects a middleware instance into the fetch request pipeline.
+     *
+     * @template T Type extending [[IMiddleware]]
+     * @param {MiddlewareFactory<T>} middlewareType The type of the middleware to be created
+     * @param {...any[]} params Any additional parameters to be passed to the constructor of the middleware type
+     * @returns {IApplicationBuilder}
+     * @memberof IApplicationBuilder
+     */
+    useMiddleware<T extends IMiddleware>(middlewareType: MiddlewareFactory<T>, ...params: any[]): IApplicationBuilder;
+
+    /**
+     * Defines a handler for requests that match the provided route.
+     *
+     * @param {(string | string[])} path Route(s) to match
+     * @param {(applicationBuilder: IApplicationBuilder) => void} configuration Route handler
+     * @param {IRouteConfiguration} [settings] Route configuration object
+     * @returns {IApplicationBuilder}
+     * @memberof IApplicationBuilder
+     */
+    map(path: string | string[], 
+        configuration: (applicationBuilder: IApplicationBuilder) => void, 
+        settings?: IRouteConfiguration): IApplicationBuilder;
+    
+    /**
+     * Defines a handler for requests that match the provide route and predicate.
+     *
+     * @param {(string | string[])} path Route(s) to match
+     * @param {(fetchContext: IFetchContext, routeVariables: IRouteVariables) => boolean} predicate Predicate to further evaluate request
+     * @param {(applicationBuilder: IApplicationBuilder) => void} configuration Route handler
+     * @param {IRouteConfiguration} [settings] Route configuration object
+     * @returns {IApplicationBuilder}
+     * @memberof IApplicationBuilder
+     */
+    mapWhen(path: string | string[], 
+            predicate: (fetchContext: IFetchContext, routeVariables: IRouteVariables) => boolean,
+            configuration: (applicationBuilder: IApplicationBuilder) => void, 
+            settings?: IRouteConfiguration): IApplicationBuilder;
+
+    /**
+     * Defines a handler used when the predicate matches
+     *
+     * @param {(fetchContext: IFetchContext) => boolean} predicate Predicate to further evaluate request
+     * @param {(applicationBuilder: IApplicationBuilder) => void} configuration Route handler
+     * @returns {IApplicationBuilder}
+     * @memberof IApplicationBuilder
+     */
+    useWhen(predicate: (fetchContext: IFetchContext) => boolean,
+            configuration: (applicationBuilder: IApplicationBuilder) => void): IApplicationBuilder;
 }
 
 /**
@@ -296,9 +405,9 @@ export interface IServiceCollection {
     /**
      * Defines a service that will be instantiated new every call.
      *
-     * @template T
-     * @param {string} key
-     * @param {() => T} factory
+     * @template T Type of service
+     * @param {string} key Name of the service
+     * @param {() => T} factory Factory of the service
      * @memberof IServiceCollection
      */
     addTransient<T extends object>(key: string, factory: () => T): void;
@@ -307,9 +416,9 @@ export interface IServiceCollection {
      * Defines a service that will be instantiated once per fetch request
      * and reused thereafter.
      *
-     * @template T
-     * @param {string} key
-     * @param {() => T} factory
+     * @template T Type of service
+     * @param {string} key Name of the service
+     * @param {() => T} factory Factory of the service
      * @memberof IServiceCollection
      */
     addScoped<T extends object>(key: string, factory: () => T): void;
@@ -317,12 +426,24 @@ export interface IServiceCollection {
     /**
      * Defines a service that will be instantiated once and reused thereafter.
      *
-     * @template T
-     * @param {string} key
-     * @param {() => T} factory
+     * @template T Type of service
+     * @param {string} key Name of the service
+     * @param {() => T} factory Factory of the service
      * @memberof IServiceCollection
      */
     addSingleton<T extends object>(key: string, factory: () => T): void;
+
+    /********************** Extensions **********************/
+
+    /**
+     * Defines a configuration object available to middleware.
+     *
+     * @template T Configuration object type
+     * @param {string} optionsName Name of configuration object type
+     * @param {T} options Instance of configuration object
+     * @memberof IServiceCollection
+     */
+    configure<T extends object>(optionsName: string, options: T): void;
 }
 
 /**
@@ -336,8 +457,8 @@ export interface IServiceProvider {
     /**
      * Returns an instance of type T associated with the private key.
      *
-     * @template T
-     * @param {string} key
+     * @template T Type of service
+     * @param {string} key Name of the service
      * @returns {T}
      * @memberof IServiceProvider
      */
@@ -406,8 +527,8 @@ export interface IServiceWorkerBuilder {
      * Indicates which IStartup class will build the services and fetch pipeline. This
      * method must be called.
      *
-     * @template T
-     * @param {StartupFactory<T>} startupType
+     * @template T Type implementing [[IStartup]]
+     * @param {StartupFactory<T>} startupType Startup class type
      * @returns {IServiceWorkerBuilder}
      * @memberof IServiceWorkerBuilder
      */
@@ -680,13 +801,12 @@ export enum LogLevel {
 }
 
 /**
- * Defines a cache strategy delegate. 
+ * Defines a cache strategy delegate. 'key' defaults to service worker version.
  *
  * @export
  * @type MiddlewareFactory
  */
 export type CacheStrategy = (key?: string) => (fetchContext: IFetchContext) => Promise<Response>;
-
 
 /**
  * List of available cache strategies
@@ -740,15 +860,80 @@ export interface ICacheStrategies {
     backgroundFetch: CacheStrategy;
 }
 
+/**
+ * Defines a HttpMethod. 
+ *
+ * @export
+ * @type MiddlewareFactory
+ */
 export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "HEAD" | "CONNECT" | "OPTIONS" | "TRACE" | "PATCH";
 
+/**
+ * Provides variables defined by a route when matched. Used in the
+ * predicate utilized by the mapWhen and cacheWhen extensions.
+ *
+ * @export
+ * @interface IRouteVariables
+ */
 export interface IRouteVariables {
+
+    /**
+     * path variables
+     *
+     * @type {Map<string, string>}
+     * @memberof IRouteVariables
+     */
     path: Map<string, string>;
+
+    /**
+     * query variables
+     *
+     * @type {Map<string, string>}
+     * @memberof IRouteVariables
+     */
     query: Map<string, string>;
+
+    /**
+     * request URL object
+     *
+     * @type {URL}
+     * @memberof IRouteVariables
+     */
     url: URL;
 }
 
+/**
+ * Configuration object for routes
+ *
+ * @export
+ * @interface IRouteConfiguration
+ */
 export interface IRouteConfiguration {
+
+    /**
+     * List of HttpMethods to match on. Default value is ["GET"].
+     *
+     * @type {HttpMethod[]}
+     * @memberof IRouteConfiguration
+     */
     methods?: HttpMethod[];
-    allowUnspecifiedParameters?: boolean; // TODO: Utilize this
+}
+
+/**
+ * Configuration object for cache extension.
+ *
+ * @export
+ * @interface ICacheConfiguration
+ * @extends {IRouteConfiguration}
+ */
+export interface ICacheConfiguration extends IRouteConfiguration {
+
+    /**
+     * The cache key to be used. Default value is the Service Worker's version
+     * found in {@link IServiceWorkerConfiguration}
+     *
+     * @type {string}
+     * @memberof ICacheConfiguration
+     */
+    cacheKey?: string;
 }

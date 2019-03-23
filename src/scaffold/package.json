@@ -1,7 +1,7 @@
 {
   "name": "@archetypical/scaffold",
   "version": "1.0.0",
-  "description": "Service Worker halp",
+  "description": "Service worker library modeled after the .NET core middleware pipeline",
   "main": "index.js",
   "scripts": {
     "test": "jest -config jestconfig.json",
@@ -20,6 +20,10 @@
     "ts-jest": "^24.0.0",
     "ts-loader": "^5.3.3",
     "tslint": "^5.14.0",
+    "typedoc": "^0.14.2",
     "typescript": "^3.3.3333"
-  }
+  },
+  "keywords": ["service", "worker", "serviceworker", "middleware", "fetch",
+    "pipeline", "dotnet", "FetchEvent", "offline", "cache", "caching", "route",
+    "routing", "activate", "install"]
 }

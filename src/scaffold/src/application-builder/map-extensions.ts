@@ -32,7 +32,7 @@ class MapMiddleware implements IMiddleware {
             const route = this.options.routes[i];
             if (route.isMatch(fetchContext.request)) {
                 if (this.options.predicate) {
-                    const routeVariables = route.getVariables(fetchContext.request.url);
+                    const routeVariables = route.getVariables(fetchContext.request);
 
                     if (this.options.predicate(fetchContext, routeVariables)) {
                         return await this.options.branch(fetchContext);
@@ -47,18 +47,18 @@ class MapMiddleware implements IMiddleware {
     }
 }
 
-declare module "./../abstractions" {
-    interface IApplicationBuilder {
-        map(path: string | string[], 
-            configuration: (applicationBuilder: IApplicationBuilder) => void, 
-            settings?: IRouteConfiguration): IApplicationBuilder;
+// declare module "./../abstractions" {
+//     interface IApplicationBuilder {
+//         map(path: string | string[], 
+//             configuration: (applicationBuilder: IApplicationBuilder) => void, 
+//             settings?: IRouteConfiguration): IApplicationBuilder;
         
-        mapWhen(path: string | string[], 
-                predicate: (fetchContext: IFetchContext, routeVariables: RouteVariables) => boolean,
-                configuration: (applicationBuilder: IApplicationBuilder) => void, 
-                settings?: IRouteConfiguration): IApplicationBuilder;
-    }
-}
+//         mapWhen(path: string | string[], 
+//                 predicate: (fetchContext: IFetchContext, routeVariables: RouteVariables) => boolean,
+//                 configuration: (applicationBuilder: IApplicationBuilder) => void, 
+//                 settings?: IRouteConfiguration): IApplicationBuilder;
+//     }
+// }
 
 declare module "./application-builder" {
     // tslint:disable-next-line:interface-name
