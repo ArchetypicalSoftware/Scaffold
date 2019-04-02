@@ -62,7 +62,7 @@ export interface IFetchContext {
      * @type {IServiceProvider}
      * @memberof IFetchContext
      */
-    serviceProvider: IServiceProvider;
+    services: IServiceProvider;
     
     /**
      * Log entries to be grouped with others in the fetch call
@@ -148,7 +148,7 @@ export interface IApplicationBuilder {
      * @type {IServiceProvider}
      * @memberof IApplicationBuilder
      */
-    applicationServices: IServiceProvider;
+    services: IServiceProvider;
 
     /**
      * Sets an object to be shared between middleware implementations
@@ -227,11 +227,11 @@ export interface IApplicationBuilder {
     /**
      * Clear old cache entries when a new service worker is activated.
      *
-     * @param {(options: ICacheClearOptions) => void} [configuration] Cache clear options object
+     * @param {ICacheClearOptions} [options] Cache clear options object
      * @returns {IApplicationBuilder}
      * @memberof IApplicationBuilder
      */
-    useClearCacheOnUpdate(configuration?: (options: ICacheClearOptions) => void): IApplicationBuilder;
+    useClearCacheOnUpdate(options: ICacheClearOptions): IApplicationBuilder;
 
     /**
      * Defines the cache strategy for requests that match the provided route(s).
@@ -662,7 +662,7 @@ export interface ILoggingBuilder {
 }
 
 /**
- * Logger used throughout the service worker implementation
+ * Represents a type used to perform logging.
  *
  * @export
  * @interface ILogger

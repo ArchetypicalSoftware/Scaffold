@@ -25,8 +25,8 @@ declare module "./application-builder" {
 }
 
 ApplicationBuilder.prototype.useClaimClients = function(): IApplicationBuilder {
-    const lifetime = this.applicationServices.getInstance<IApplicationLifetime>("IApplicationLifetime");
-    const logger = this.applicationServices.getInstance<ILogger>("ILogger");
+    const lifetime = this.services.getInstance<IApplicationLifetime>("IApplicationLifetime");
+    const logger = this.services.getInstance<ILogger>("ILogger");
 
     lifetime.activating.register(async (event: ExtendableEvent) => {
         logger.debug("Claiming available clients");

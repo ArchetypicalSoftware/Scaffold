@@ -1,6 +1,6 @@
+import { IRouteConfiguration } from "../../src/abstractions";
 import { Route } from "./../../src/routing/route";
 import { Request } from "./../service-worker.mocks";
-import { IRouteConfiguration } from "../../src/abstractions";
 
 describe("Route tests", () => {
     const base = "https://www.example.com";
@@ -10,7 +10,9 @@ describe("Route tests", () => {
 
         expect(route.isMatch(new Request(`${base}/Area/SomeController/SomeAction`))).toBe(true);
         expect(route.isMatch(new Request(`${base}/Area/SomeController/SomeAction2`))).toBe(false);
-        expect(route.isMatch(new Request(`${base}/Area/SomeController/SomeAction.js`))).toBe(false);
+        expect(route.isMatch(new Request(`${base}/Area/SomeController/SomeAction.js`))).toBe(false);        
+        expect(route.isMatch(new Request(`${base}/Area/SomeController`))).toBe(false);
+        expect(route.isMatch(new Request(`${base}/Area`))).toBe(false);
     });
 
     test("variable matching", () => {

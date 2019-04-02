@@ -5,14 +5,14 @@ export class FetchContext implements IFetchContext {
     public request: Request;
     public response: Promise<Response>;
     public event: FetchEvent;
-    public serviceProvider: IServiceProvider;
+    public services: IServiceProvider;
     public logEntries: ILogEntry[];
 
-    constructor(fetchEvent: FetchEvent, serviceProvider?: IServiceProvider) {
+    constructor(fetchEvent: FetchEvent, services?: IServiceProvider) {
         this.request = fetchEvent.request;
         this.response = null as unknown as Promise<Response>;
         this.event = fetchEvent;
-        this.serviceProvider = serviceProvider as IServiceProvider;
+        this.services = services as IServiceProvider;
         this.logEntries = [];
     }
 

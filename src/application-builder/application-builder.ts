@@ -4,14 +4,14 @@ import { IApplicationBuilder, IFetchContext, IServiceProvider, IServiceWorkerCon
 export class ApplicationBuilder implements IApplicationBuilder {
     public properties: Map<string, object>;
     public defaultRequestDelegate: RequestDelegate;
-    public applicationServices: IServiceProvider;
+    public services: IServiceProvider;
     public config: IServiceWorkerConfiguration;
 
     private components: Array<(requestDelegate: RequestDelegate) => RequestDelegate> = [];
 
     constructor(config: IServiceWorkerConfiguration, applicationServices: IServiceProvider) {
         this.properties = new Map<string, object>();
-        this.applicationServices = applicationServices;
+        this.services = applicationServices;
         this.config = config;
 
         this.defaultRequestDelegate = (fetchContext: IFetchContext): Promise<IFetchContext> => {
@@ -23,7 +23,7 @@ export class ApplicationBuilder implements IApplicationBuilder {
     }
 
     public clone(): IApplicationBuilder {
-        const clone = new ApplicationBuilder(this.config, this.applicationServices);
+        const clone = new ApplicationBuilder(this.config, this.services);
 
         this.properties.forEach((value: object, key: string) => clone.setProperty(key, value));
 

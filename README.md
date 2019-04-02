@@ -1,8 +1,8 @@
 # Scaffold
 
-Scaffold is an extendible library designed to quickly build service workers modeled after the .NET core middleware pipeline. Scaffold simplifies many of the common use cases to single function calls while allowing developers to expand and define functionality to suit their application's needs.
+Scaffold is an extensible library designed to quickly build service workers modeled after the .NET core middleware pipeline. Scaffold simplifies many of the common use cases to single function calls while allowing developers to expand and define functionality to suit their application's needs.
 
-Example
+Basic Example
 
 ```ts
 // service-worker.ts
@@ -13,7 +13,6 @@ import { IApplicationBuilder, IStartup, ServiceWorker, CacheStrategies } from "@
 const offlineAssets = [
     "/css/site.css",
     "/js/site.js",
-    "/img/*.*",
     "/"
 ];
 
@@ -33,21 +32,19 @@ ServiceWorker
     .build();
 ```
 
-In the example above, we were able to quickly define a list of assets that should be cached up on install of the service worker. In addition, each new request for those assets will immediately return the cached response and check for any updates in a background process.
+In the example above, we were able to quickly define a list of assets that should be cached up on install of the service worker. In addition, each new request for those assets will immediately return the cached response and update the cache with the latest version in a background process.
 
-Scaffold was designed to allow developers to quickly generate and iterate on service worker implementations while enabling any and all levels of extensions.
-
-Remaining topics:
+## Table of Contents
 
 * Overview
-* Routes
-* Caching
+* [Routing](docs/routing.md)
+* [Caching](docs/caching.md)
 * Map
 * Use
 * ApplicationBuilder
 * ServiceCollection/Provider
-* Builder
-* Logging
+* ServiceWorkerBuilder
+* [Logging](docs/logging/logging.md)
 * IApplicationLifetime
 * Startup class
 * debugging

@@ -28,6 +28,7 @@ export class ServiceWorkerBuilder implements IServiceWorkerBuilder {
         this.services.addSingleton("IApplicationLifetime", () => this.applicationLifetime);
 
         this.logger = new DefaultLogger();
+        this.logger.logLevel = this.config.environment! === "development" ? LogLevel.Debug : LogLevel.Info;
         this.services.addSingleton("ILogger", () => this.logger);
 
         this.singletonContainer = new Map<string, object>();

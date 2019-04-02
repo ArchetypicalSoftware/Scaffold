@@ -17,8 +17,8 @@ declare module "./application-builder" {
 ApplicationBuilder.prototype.useInstallCache = function(urlsToCache: string[], key?: string): IApplicationBuilder {
     key = key || this.config.version;
 
-    const lifetime = this.applicationServices.getInstance<IApplicationLifetime>("IApplicationLifetime");
-    const logger = this.applicationServices.getInstance<ILogger>("ILogger");
+    const lifetime = this.services.getInstance<IApplicationLifetime>("IApplicationLifetime");
+    const logger = this.services.getInstance<ILogger>("ILogger");
 
     lifetime.installing.register(async () => {
         logger.debug(`Caching with key ${key!} the following files:\n\t\n${urlsToCache.join("\t\n")}`);
