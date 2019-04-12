@@ -188,138 +188,13 @@ export interface IApplicationBuilder {
     build(): RequestDelegate;
 
     /**
-     * Adds a pass through a middleware to be used.
+     * Adds a pass through a middleware
      *
      * @param {(requestDelegate: RequestDelegate) => RequestDelegate} middleware
      * @returns {IApplicationBuilder}
      * @memberof IApplicationBuilder
      */
     use(middleware: (requestDelegate: RequestDelegate) => RequestDelegate): IApplicationBuilder;
-
-    /**
-     * Adds a pass through middleware to be used.
-     *
-     * @param {(fetchContext: IFetchContext, next: () => Promise<IFetchContext>) => Promise<IFetchContext>} middleware
-     * @returns {IApplicationBuilder}
-     * @memberof IApplicationBuilder
-     */
-    useNext(middleware: (fetchContext: IFetchContext, next: () => Promise<IFetchContext>) => Promise<IFetchContext>): IApplicationBuilder;
-
-    /**
-     * Adds a terminal middleware implementation.
-     *
-     * @param {RequestDelegate} handler
-     * @memberof IApplicationBuilder
-     */
-    run(handler: RequestDelegate): void;
-
-    /********************** Extensions **********************/
-
-    /**
-     * Attempt to claim all available clients within scope.
-     * See more at https://developer.mozilla.org/en-US/docs/Web/API/Clients/claim
-     *
-     * @returns {IApplicationBuilder}
-     * @memberof IApplicationBuilder
-     */
-    useClaimClients(): IApplicationBuilder;
-
-    /**
-     * Clear old cache entries when a new service worker is activated.
-     *
-     * @param {ICacheClearOptions} [options] Cache clear options object
-     * @returns {IApplicationBuilder}
-     * @memberof IApplicationBuilder
-     */
-    useClearCacheOnUpdate(options: ICacheClearOptions): IApplicationBuilder;
-
-    /**
-     * Defines the cache strategy for requests that match the provided route(s).
-     *
-     * @param {(string | string[])} path Route(s) to match
-     * @param {CacheStrategy} cacheStrategy Cache strategy to be used
-     * @param {ICacheConfiguration} [settings] Configuration options
-     * @returns {IApplicationBuilder}
-     * @memberof IApplicationBuilder
-     */
-    cache(path: string | string[], 
-          cacheStrategy: CacheStrategy, 
-          settings?: ICacheConfiguration): IApplicationBuilder;
-
-    /**
-     * Defines the cache strategy for requests that match the provided route(s) and predicate.
-     *
-     * @param {(string | string[])} path Route(s) to match
-     * @param {(fetchContext: IFetchContext, routeVariables: IRouteVariables) => boolean} predicate Predicate to further evaluate request
-     * @param {CacheStrategy} cacheStrategy Cache strategy to be used
-     * @param {ICacheConfiguration} [settings] Configuration options
-     * @returns {IApplicationBuilder}
-     * @memberof IApplicationBuilder
-     */
-    cacheWhen(path: string | string[], 
-              predicate: (fetchContext: IFetchContext, routeVariables: IRouteVariables) => boolean, 
-              cacheStrategy: CacheStrategy, 
-              settings?: ICacheConfiguration): IApplicationBuilder;
-
-    /**
-     * Caches assets during install of the service worker.
-     *
-     * @param {string[]} urlsToCache List of assets to cache
-     * @param {string} [key] Key to of the cache to own the assets. Defaults to the version of the Service Worker.
-     * @returns {IApplicationBuilder}
-     * @memberof IApplicationBuilder
-     */
-    useInstallCache(urlsToCache: string[], key?: string): IApplicationBuilder;
-
-    /**
-     * Injects a middleware instance into the fetch request pipeline.
-     *
-     * @template T Type extending [[IMiddleware]]
-     * @param {MiddlewareFactory<T>} middlewareType The type of the middleware to be created
-     * @param {...any[]} params Any additional parameters to be passed to the constructor of the middleware type
-     * @returns {IApplicationBuilder}
-     * @memberof IApplicationBuilder
-     */
-    useMiddleware<T extends IMiddleware>(middlewareType: MiddlewareFactory<T>, ...params: any[]): IApplicationBuilder;
-
-    /**
-     * Defines a handler for requests that match the provided route.
-     *
-     * @param {(string | string[])} path Route(s) to match
-     * @param {(applicationBuilder: IApplicationBuilder) => void} configuration Route handler
-     * @param {IRouteConfiguration} [settings] Route configuration object
-     * @returns {IApplicationBuilder}
-     * @memberof IApplicationBuilder
-     */
-    map(path: string | string[], 
-        configuration: (applicationBuilder: IApplicationBuilder) => void, 
-        settings?: IRouteConfiguration): IApplicationBuilder;
-    
-    /**
-     * Defines a handler for requests that match the provide route and predicate.
-     *
-     * @param {(string | string[])} path Route(s) to match
-     * @param {(fetchContext: IFetchContext, routeVariables: IRouteVariables) => boolean} predicate Predicate to further evaluate request
-     * @param {(applicationBuilder: IApplicationBuilder) => void} configuration Route handler
-     * @param {IRouteConfiguration} [settings] Route configuration object
-     * @returns {IApplicationBuilder}
-     * @memberof IApplicationBuilder
-     */
-    mapWhen(path: string | string[], 
-            predicate: (fetchContext: IFetchContext, routeVariables: IRouteVariables) => boolean,
-            configuration: (applicationBuilder: IApplicationBuilder) => void, 
-            settings?: IRouteConfiguration): IApplicationBuilder;
-
-    /**
-     * Defines a handler used when the predicate matches
-     *
-     * @param {(fetchContext: IFetchContext) => boolean} predicate Predicate to further evaluate request
-     * @param {(applicationBuilder: IApplicationBuilder) => void} configuration Route handler
-     * @returns {IApplicationBuilder}
-     * @memberof IApplicationBuilder
-     */
-    useWhen(predicate: (fetchContext: IFetchContext) => boolean,
-            configuration: (applicationBuilder: IApplicationBuilder) => void): IApplicationBuilder;
 }
 
 /**
@@ -592,7 +467,7 @@ export interface ICacheClearOptions {
      * @type {string[]}
      * @memberof ICacheClearOptions
      */
-    keysToKeep: string[];
+    whitelist: string[];
 }
 
 /**

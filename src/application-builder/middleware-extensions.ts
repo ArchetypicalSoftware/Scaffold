@@ -1,11 +1,18 @@
 import { IApplicationBuilder, IFetchContext, IMiddleware, MiddlewareFactory, RequestDelegate } from "../abstractions";
 import { ApplicationBuilder } from "./application-builder";
 
-// declare module "./../abstractions" {
-//     interface IApplicationBuilder {
-//         useMiddleware<T extends IMiddleware>(middlewareType: MiddlewareFactory<T>, ...params: any[]): IApplicationBuilder;
-//     }
-// }
+declare module "./../abstractions" {
+    interface IApplicationBuilder {
+        /**
+         * Build a middleware utilizing a type implementing IMiddleware
+         *
+         * @template T Type implementing IMiddleware
+         * @param middlewareType Constructor of type T
+         * @param params Additional parameters to be provided during T's construction
+         */
+        useMiddleware<T extends IMiddleware>(middlewareType: MiddlewareFactory<T>, ...params: any[]): IApplicationBuilder;
+    }
+}
 
 declare module "./application-builder" {
     // tslint:disable-next-line:interface-name

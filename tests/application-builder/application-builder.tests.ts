@@ -1,6 +1,8 @@
 import { IApplicationBuilder, IFetchContext, IServiceProvider, IServiceWorkerConfiguration, RequestDelegate } from "../../src/abstractions";
 import { FetchEvent, Request } from "../service-worker.mocks";
 import { ApplicationBuilder } from "./../../src/application-builder/application-builder";
+import "./../../src/application-builder/run-extensions";
+import "./../../src/application-builder/use-next-extensions";
 import { FetchContext } from "./../../src/fetch/fetch-context";
 
 describe("Application Builder tests", () => {
@@ -45,7 +47,7 @@ describe("Application Builder tests", () => {
         done();
     });
 
-    test("useFunc", async (done) => {
+    test("useNext", async (done) => {
         let result = "";
 
         applicationBuilder.useNext((f: IFetchContext, next: () => Promise<IFetchContext>) => {

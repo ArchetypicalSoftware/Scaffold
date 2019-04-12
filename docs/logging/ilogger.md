@@ -7,63 +7,41 @@ Represents a type used to perform logging.
 ## Properties
 
 ```ts
- /**
- * The current log level
- */
+// The current log level
 logLevel: LogLevel;
 
-/**
- * If the logger currently supports debug logs
- */
+// If the logger currently supports debug logs
 isDebug: boolean;
 
-/**
- * If the logger currently supports info logs
- */
+// If the logger currently supports info logs
 isInfo: boolean;
 
-/**
- * If the logger currently supports warn logs
- */
+// If the logger currently supports warn logs
 isWarn: boolean;
 ```
 
 ## Methods
 
 ```ts
-/**
- * Logs a debug level message
- */
+// Logs a debug level message
 debug(message: string): void;
 
-/**
- * Logs an info level message
- */
+// Logs an info level message
 info(message: string): void;
 
-/**
- * Logs a warn level message
- */
+// Logs a warn level message
 warn(message: string): void;
 
-/**
- * Logs an error level message
- */
+// Logs an error level message
 error(message: string): void;
 
-/**
- * Starts a group
- */
+// Starts a group
 group(title: string, message?: string, logLevel?: LogLevel): void;
 
-/**
- * Starts a collapsed group
- */
+// Starts a collapsed group
 groupCollapsed(title: string, message?: string, logLevel?: LogLevel): void;
 
-/**
- * Ends a (collapsed) group
- */
+// Ends a (collapsed) group
 groupEnd(): void;
 ```
 

@@ -1,11 +1,18 @@
 import { IApplicationBuilder, IApplicationLifetime, ICacheClearOptions, ILogger } from "../abstractions";
 import { ApplicationBuilder } from "./application-builder";
 
-// declare module "./../abstractions" {
-//     interface IApplicationBuilder {
-//         useClearCacheOnUpdate(configuration?: (options: ICacheClearOptions) => void): IApplicationBuilder;
-//     }
-// }
+declare module "./../abstractions" {
+    interface IApplicationBuilder {
+        /**
+         * Clears any entries not on the whitelist
+         *
+         * @param {ICacheClearOptions} options
+         * @returns {IApplicationBuilder}
+         * @memberof IApplicationBuilder
+         */
+        useClearCacheOnUpdate(options: ICacheClearOptions): IApplicationBuilder;
+    }
+}
 
 declare module "./application-builder" {
     // tslint:disable-next-line:interface-name
@@ -16,7 +23,7 @@ declare module "./application-builder" {
 
 ApplicationBuilder.prototype.useClearCacheOnUpdate = function(options: ICacheClearOptions): IApplicationBuilder {
     options = Object.assign({}, {
-        keysToKeep: [this.config.version],
+        whitelist: [this.config.version],
     }, options);
 
     const lifetime = this.services.getInstance<IApplicationLifetime>("IApplicationLifetime");
@@ -28,7 +35,7 @@ ApplicationBuilder.prototype.useClearCacheOnUpdate = function(options: ICacheCle
         const keys = await caches.keys();
 
         await Promise.all(keys.map(async (key: string) => {
-            if (options.keysToKeep.indexOf(key) === -1) {
+            if (options.whitelist.indexOf(key) === -1) {
                 logger.debug(`Clearing cache with key ${key}`);
                 await caches.delete(key);
             }

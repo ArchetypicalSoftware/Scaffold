@@ -47,18 +47,34 @@ class MapMiddleware implements IMiddleware {
     }
 }
 
-// declare module "./../abstractions" {
-//     interface IApplicationBuilder {
-//         map(path: string | string[], 
-//             configuration: (applicationBuilder: IApplicationBuilder) => void, 
-//             settings?: IRouteConfiguration): IApplicationBuilder;
+declare module "./../abstractions" {
+    interface IApplicationBuilder {
+
+        /**
+         * A terminal handler execute when a provided route matches
+         * 
+         * @param path path route(s) to match
+         * @param configuration execution path on match
+         * @param settings configuration options
+         */
+        map(path: string | string[], 
+            configuration: (applicationBuilder: IApplicationBuilder) => void, 
+            settings?: IRouteConfiguration): IApplicationBuilder;
         
-//         mapWhen(path: string | string[], 
-//                 predicate: (fetchContext: IFetchContext, routeVariables: RouteVariables) => boolean,
-//                 configuration: (applicationBuilder: IApplicationBuilder) => void, 
-//                 settings?: IRouteConfiguration): IApplicationBuilder;
-//     }
-// }
+        /**
+         * A terminal handler execute when a provided route and predicate matches
+         * 
+         * @param path path route(s) to match
+         * @param predicate predicate to further evaluate request
+         * @param configuration execution path on match
+         * @param settings configuration options
+         */
+        mapWhen(path: string | string[], 
+                predicate: (fetchContext: IFetchContext, routeVariables: RouteVariables) => boolean,
+                configuration: (applicationBuilder: IApplicationBuilder) => void, 
+                settings?: IRouteConfiguration): IApplicationBuilder;
+    }
+}
 
 declare module "./application-builder" {
     // tslint:disable-next-line:interface-name

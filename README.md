@@ -2,7 +2,7 @@
 
 Scaffold is an extensible library designed to quickly build service workers modeled after the .NET core middleware pipeline. Scaffold simplifies many of the common use cases to single function calls while allowing developers to expand and define functionality to suit their application's needs.
 
-Basic Example
+Example implementation
 
 ```ts
 // service-worker.ts
@@ -39,15 +39,14 @@ In the example above, we were able to quickly define a list of assets that shoul
 * Overview
 * [Routing](docs/routing.md)
 * [Caching](docs/caching.md)
-* Map
-* Use
-* ApplicationBuilder
+* [ApplicationBuilder](docs/application-builder/iapplication-builder.md)
+* [ApplicationBuilder extensions](docs/application-builder/extensions.md)
 * ServiceCollection/Provider
 * ServiceWorkerBuilder
 * [Logging](docs/logging/logging.md)
 * IApplicationLifetime
-* Startup class
-* debugging
-* extensions
-* Fetch pipeline
+* Startup
+* Debugging
+* [Custom Extensions](docs/custom-extensions.md)
+* [Fetch Context](docs/fetch-context.md)
 * Playground

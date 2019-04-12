@@ -43,20 +43,6 @@ export class ApplicationBuilder implements IApplicationBuilder {
         return this;
     }
 
-    public useNext(middleware: (fetchContext: IFetchContext, next: () => Promise<IFetchContext>) => Promise<IFetchContext>): IApplicationBuilder {
-        this.use((next: RequestDelegate) => {
-            return (fetchContext: IFetchContext) => {
-                const simpleNext = () => next(fetchContext);
-                return middleware(fetchContext, simpleNext);
-            };
-        });
-        return this;
-    }
-    
-    public run(handler: RequestDelegate) {
-        this.use(() => handler);
-    }
-
     public build(): RequestDelegate {
         let app: RequestDelegate = this.defaultRequestDelegate;
         this.components.reverse().forEach((component) => app = component(app));
