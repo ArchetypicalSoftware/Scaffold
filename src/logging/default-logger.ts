@@ -91,19 +91,19 @@ export class DefaultLogger implements ILogger {
     }
 
     private getGroupStyle(logLevel: LogLevel): string {
-        let style = "border-radius:2px;color:black;";
+        let style = "border-radius:2px;";
 
         switch (logLevel) {
             case LogLevel.Debug:
                 break;
             case LogLevel.Info:
-                style += "background-color:#0077FF";
+                style += "background-color:#0077FF;";
                 break;
             case LogLevel.Warn:
-                style += "background-color:#FFA200";
+                style += "background-color:#FFA200;";
                 break;
             case LogLevel.Error:
-                style += "background-color:#FF2200";
+                style += "background-color:#FF2200;";
         }
 
         return style;

@@ -1,4 +1,6 @@
-# Fetch Context
+# Scaffold
+
+## Fetch Context
 
 The `FetchContext` is an object that is created every request and passed through the request pipeline. It contains the generated `FetchEvent`, log capabilities and eventually the subsequent response.
 

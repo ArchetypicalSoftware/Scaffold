@@ -64,36 +64,34 @@ export class ServiceWorkerBuilder implements IServiceWorkerBuilder {
         const startup = new (Function.prototype.bind.apply(this.startupType!, [null]) as any) as IStartup;
 
         if (startup.configureServices) {
-            startup.configureServices(this.services);
+            startup.configureServices(this.services, this.logger);
         }
 
         const serviceProvider = new ServiceProvider(this.services.serviceDescriptors, this.singletonContainer);
 
         const applicationBuilder = new ApplicationBuilder(this.config, serviceProvider);
 
-        startup.configure(applicationBuilder);
-
-        const logger = serviceProvider.getInstance<ILogger>("ILogger");
+        startup.configure(applicationBuilder, this.logger);        
 
         let requestDelegate: RequestDelegate | null = null;
 
         self.addEventListener("install", (event) => {
             (event as ExtendableEvent).waitUntil((async () => {
-                logger.groupCollapsed("INSTALL", "", LogLevel.Info);
+                this.logger.groupCollapsed("INSTALL", "", LogLevel.Info);
                 
                 try {
                     await this.applicationLifetime.installEventSource.fire();
                 } catch (err) {
-                    logger.error(`Error during activate: ${err}`);
+                    this.logger.error(`Error during activate: ${err}`);
                 } finally {
-                    logger.groupEnd();
+                    this.logger.groupEnd();
                 }                
             })());
         });
 
         self.addEventListener("activate", (event) => {
             (event as ExtendableEvent).waitUntil((async () => {
-                logger.groupCollapsed("ACTIVATE", "", LogLevel.Info);
+                this.logger.groupCollapsed("ACTIVATE", "", LogLevel.Info);
                 
                 try {
                     await this.applicationLifetime.activateEventSource.fire();
@@ -103,9 +101,9 @@ export class ServiceWorkerBuilder implements IServiceWorkerBuilder {
                         throw new Error("RequestDelegate is invalid");
                     }
                 } catch (err) {
-                    logger.error(`Error during activate: ${err}`);
+                    this.logger.error(`Error during activate: ${err}`);
                 } finally {
-                    logger.groupEnd();
+                    this.logger.groupEnd();
                 }
             })());
         });
@@ -121,7 +119,7 @@ export class ServiceWorkerBuilder implements IServiceWorkerBuilder {
                     if (requestDelegate) {
                         await requestDelegate(fetchContext);
                     } else {
-                        logger.error("Request delegate is invalid");
+                        this.logger.error("Request delegate is invalid");
                     }
                 } catch (err) {
                     fetchContext.log(LogLevel.Error, err);
@@ -130,7 +128,7 @@ export class ServiceWorkerBuilder implements IServiceWorkerBuilder {
                     fetchContext.log(LogLevel.Info, `Time elapsed: ${timeElapsed} ms`);
                 }
 
-                const logEntries = fetchContext.logEntries.filter((entry) => entry.logLevel >= logger.logLevel);
+                const logEntries = fetchContext.logEntries.filter((entry) => entry.logLevel >= this.logger.logLevel);
 
                 if (logEntries.length) {
                     let highestEntryLevel = LogLevel.Info;
@@ -140,24 +138,24 @@ export class ServiceWorkerBuilder implements IServiceWorkerBuilder {
                         }
                     });
 
-                    logger.groupCollapsed("FETCH", `${fetchContext.request.url} ${timeElapsed} ms`, highestEntryLevel);
+                    this.logger.groupCollapsed("FETCH", `${fetchContext.request.url} ${timeElapsed} ms`, highestEntryLevel);
                     logEntries.forEach((entry) => {
                         switch (entry.logLevel) {
                             case LogLevel.Debug:
-                                logger.debug(entry.message);
+                                this.logger.debug(entry.message);
                                 break;
                             case LogLevel.Info:
-                                logger.info(entry.message);
+                                this.logger.info(entry.message);
                                 break;
                             case LogLevel.Warn:
-                                logger.warn(entry.message);
+                                this.logger.warn(entry.message);
                                 break;
                             case LogLevel.Error:
-                                logger.error(entry.message);
+                                this.logger.error(entry.message);
                                 break;
                         }
                     });
-                    logger.groupEnd();
+                    this.logger.groupEnd();
                 }
             })());
         });

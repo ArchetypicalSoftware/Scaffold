@@ -307,18 +307,6 @@ export interface IServiceCollection {
      * @memberof IServiceCollection
      */
     addSingleton<T extends object>(key: string, factory: () => T): void;
-
-    /********************** Extensions **********************/
-
-    /**
-     * Defines a configuration object available to middleware.
-     *
-     * @template T Configuration object type
-     * @param {string} optionsName Name of configuration object type
-     * @param {T} options Instance of configuration object
-     * @memberof IServiceCollection
-     */
-    configure<T extends object>(optionsName: string, options: T): void;
 }
 
 /**
@@ -399,7 +387,7 @@ export interface IServiceWorkerBuilder {
     configureLogging(configuration: (builder: ILoggingBuilder) => void): IServiceWorkerBuilder;
 
     /**
-     * Indicates which IStartup class will build the services and fetch pipeline. This
+     * Indicates which Startup class will build the services and fetch pipeline. This
      * method must be called.
      *
      * @template T Type implementing [[IStartup]]

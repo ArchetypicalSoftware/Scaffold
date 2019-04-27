@@ -5,9 +5,9 @@ import { ServiceWorkerBuilder } from "./service-worker-builder";
  * Entry point to the service worker building process.
  *
  * @export
- * @class ServiceWorker
+ * @class Scaffold
  */
-export class ServiceWorker {
+export class Scaffold {
 
     /**
      * Creates a standard service worker builder instance.

@@ -9,6 +9,7 @@ import "./application-builder/clear-cache-on-update-extensions";
 import "./application-builder/install-cache-extensions";
 import "./application-builder/map-extensions";
 import "./application-builder/middleware-extensions";
+import "./application-builder/run-extensions";
 import "./application-builder/use-when-extensions";
 
 export { IFetchContext, IApplicationBuilder, IMiddleware, MiddlewareFactory, RequestDelegate, ApplicationBuilder, 
@@ -25,9 +26,9 @@ export { IServiceCollection, IServiceProvider, ServiceCollection };
 // Hosting
 
 import { IServiceWorkerBuilder, IStartup, StartupFactory } from "./abstractions";
-import { ServiceWorker } from "./hosting/service-worker";
+import { Scaffold } from "./hosting/scaffold";
 
-export { IServiceWorkerBuilder, IStartup, StartupFactory, ServiceWorker };
+export { IServiceWorkerBuilder, IStartup, StartupFactory, Scaffold };
 
 // Logging
 

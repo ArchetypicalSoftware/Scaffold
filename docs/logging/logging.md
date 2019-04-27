@@ -27,12 +27,15 @@ public configure(applicationBuilder: IApplicationBuilder, logger?: ILogger): voi
 
 ### `FetchContext`
 
-When executing the fetch request pipeline, you can access the `ILogger` instance by utilizing `services` found on `FetchContext`.
+When executing the fetch request pipeline, you can call the `log` method found on `FetchContext`.
 
 ```ts
-const logger = context.services.getInstance<ILogger>("ILogger");
-logger.debug("This is a debug message!");
+context.log(LogLevel.Debug, "This is a debug message!");
 ```
+
+In an effort to keep the logs pertaining to a specific fetch request organized, the log entries created through the `log` method are grouped together and shown at the end of the fetch request.
+
+![Fetch log grouping](../../images/DebuggingFetch.png)
 
 ### `ConfigureServices`
 
@@ -70,7 +73,7 @@ The default service worker builder instantiates an `ILogger` instance with a log
 To change the log level at startup of the worker, utilize the `configureLogging` method available on `IServiceWorkerBuilder`.
 
 ```ts
-ServiceWorker
+Scaffold
     .createDefaultBuilder("1.0.0")
     .configureLogging(loggingBuilder => {
         // Set the desired log level
@@ -84,7 +87,7 @@ ServiceWorker
 You also can replace the default logger by providing your own custom logger implementation. To do this, utilize the `configureLogging` method available on `IServiceWorkerBuilder`.
 
 ```ts
-ServiceWorker
+Scaffold
     .createDefaultBuilder("1.0.0")
     .configureLogging(loggingBuilder => {
         // Define the logger factory

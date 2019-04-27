@@ -275,7 +275,7 @@ builder.useClaimClients();
 
 ## `useClearCacheOnUpdate`
 
-The `useClearCacheOnUpdate` extension clears any entries not indicated on the whitelist. By default, the whitelist includes the `version` of the service worker provided to the `ServiceWorker.createDefaultBuilder` method.
+The `useClearCacheOnUpdate` extension clears any entries not indicated on the whitelist. By default, the whitelist includes the `version` of the service worker provided to the `Scaffold.createDefaultBuilder` method.
 
 ```ts
 /**
@@ -300,7 +300,7 @@ builder.useClearCacheOnUpdated({
 
 ## `useInstallCache`
 
-The `useInstallCache` extension fetches and caches any provided assets during install event. The default `cacheKey` is the service worker version provided to `ServiceWorker.createDefaultBuilder` method but can be overridden if necessary.
+The `useInstallCache` extension fetches and caches any provided assets during install event. The default `cacheKey` is the service worker version provided to `Scaffold.createDefaultBuilder` method but can be overridden if necessary.
 
 ```ts
 /**

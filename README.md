@@ -7,7 +7,7 @@ Example implementation
 ```ts
 // service-worker.ts
 
-import { IApplicationBuilder, IStartup, ServiceWorker, CacheStrategies } from "@archetypical/scaffold"
+import { IApplicationBuilder, IStartup, Scaffold, CacheStrategies } from "@archetypical/scaffold"
 
 // List of assets necessary for offline capability
 const offlineAssets = [
@@ -26,7 +26,7 @@ class Startup implements IStartup {
     }
 }
 
-ServiceWorker
+Scaffold
     .createDefaultBuilder("1.0.0")
     .useStartup(Startup)
     .build();
@@ -36,17 +36,15 @@ In the example above, we were able to quickly define a list of assets that shoul
 
 ## Table of Contents
 
-* Overview
 * [Routing](docs/routing.md)
 * [Caching](docs/caching.md)
-* [ApplicationBuilder](docs/application-builder/iapplication-builder.md)
-* [ApplicationBuilder extensions](docs/application-builder/extensions.md)
-* ServiceCollection/Provider
-* ServiceWorkerBuilder
+* [IApplicationBuilder](docs/application-builder/iapplication-builder.md)
+* [IApplicationBuilder extensions](docs/application-builder/extensions.md)
+* [IServiceCollection](docs/iservice-collection.md)
+* [IServiceProvider](docs/iservice-provider.md)
+* [IServiceWorkerBuilder](docs/iservice-worker-builder.md)
 * [Logging](docs/logging/logging.md)
-* IApplicationLifetime
-* Startup
-* Debugging
+* [IApplicationLifetime](docs/iapplication-lifetime.md)
+* [Startup](docs/startup.md)
 * [Custom Extensions](docs/custom-extensions.md)
 * [Fetch Context](docs/fetch-context.md)
-* Playground

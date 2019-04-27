@@ -1,5 +1,6 @@
 import { IApplicationBuilder, IFetchContext, IServiceProvider, IServiceWorkerConfiguration } from "../../src/abstractions";
 import "../../src/application-builder/map-extensions";
+import "../../src/application-builder/run-extensions";
 import { FetchEvent, Request } from "../service-worker.mocks";
 import { ApplicationBuilder } from "./../../src/application-builder/application-builder";
 import { FetchContext } from "./../../src/fetch/fetch-context";
