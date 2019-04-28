@@ -35,7 +35,7 @@ context.log(LogLevel.Debug, "This is a debug message!");
 
 In an effort to keep the logs pertaining to a specific fetch request organized, the log entries created through the `log` method are grouped together and shown at the end of the fetch request.
 
-![Fetch log grouping](../../images/DebuggingFetch.png)
+![Fetch log grouping](../images/DebuggingFetch.png)
 
 ### `ConfigureServices`
 

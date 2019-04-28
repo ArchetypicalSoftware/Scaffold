@@ -1,17 +1,5 @@
 # IApplication Builder Extensions
 
-* [`cache`](#cache)
-* [`cacheWhen`](#cacheWhen)
-* [`map`](#map)
-* [`mapWhen`](#mapWhen)
-* [`run`](#run)
-* [`useMiddleware`](#useMiddleware)
-* [`useNext`](#useNext)
-* [`useWhen`](#useWhen)
-* [`useClaimClients`](#useClaimClients)
-* [`useClearCacheOnUpdate`](#useClearCacheOnUpdate)
-* [`useInstallCache`](#useInstallCache)
-
 ## `cache`
 
 The `cache` extension defines a caching strategy to be used when a route is matched.
