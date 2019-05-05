@@ -1,6 +1,3 @@
-
-## Table of Contents
-
 * [Routing](docs/routing.md)
 * [Caching](docs/caching.md)
 * [IApplicationBuilder](docs/application-builder/iapplication-builder.md)
