@@ -6,7 +6,9 @@
   "scripts": {
     "test": "jest -config jestconfig.json",
     "lint": "tslint -p tsconfig.json",
-    "build": "tsc"
+    "build": "tsc",
+    "prepare": "npm run build && npm run lint",
+    "prepublishOnly": "npm test"
   },
   "author": "Archetypical.Software",
   "license": "ISC",
@@ -25,5 +27,20 @@
   },
   "keywords": ["service", "worker", "serviceworker", "middleware", "fetch",
     "pipeline", "dotnet", "FetchEvent", "offline", "cache", "caching", "route",
-    "routing", "activate", "install"]
+    "routing", "activate", "install", "PWA", "progressive", "web", "app", "application"],
+  "icon": "",
+  "files": [
+    "lib/**/*", 
+    "README.md",
+    "toc.md",
+    "LICENSE",
+    "CODE_OF_CONDUCT.md"
+  ],
+  "types": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ArchetypicalSoftware/Scaffold"
+  },
+  "homepage": "https://archetypical.software/Product/Detail/Scaffold"
+  
 }

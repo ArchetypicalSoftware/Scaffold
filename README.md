@@ -1,5 +1,7 @@
 # Scaffold
 
+![Scaffold](docs/images/Scaffold.png)
+
 Scaffold is an extensible library designed to quickly build service workers modeled after the .NET core middleware pipeline. Scaffold simplifies many of the common use cases to single function calls while allowing developers to expand and define functionality to suit their application's needs.
 
 Example implementation
