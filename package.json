@@ -12,7 +12,6 @@
   },
   "author": "Archetypical.Software",
   "license": "ISC",
-  "private": true,
   "dependencies": {},
   "jest": {
     "testEnvironment": "node"
