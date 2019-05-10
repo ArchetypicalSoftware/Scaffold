@@ -32,3 +32,17 @@ Scaffold
 ```
 
 In the example above, we were able to quickly define a list of assets that should be cached up on install of the service worker. In addition, each new request for those assets will immediately return the cached response and update the cache with the latest version in a background process.
+
+* [Overview](readme.md)
+* [Routing](docs/routing.md)
+* [Caching](docs/caching.md)
+* [IApplicationBuilder](docs/application-builder/iapplication-builder.md)
+* [IApplicationBuilder extensions](docs/application-builder/extensions.md)
+* [IServiceCollection](docs/iservice-collection.md)
+* [IServiceProvider](docs/iservice-provider.md)
+* [IServiceWorkerBuilder](docs/iservice-worker-builder.md)
+* [Logging](docs/logging/logging.md)
+* [IApplicationLifetime](docs/iapplication-lifetime.md)
+* [Startup](docs/startup.md)
+* [Custom Extensions](docs/custom-extensions.md)
+* [Fetch Context](docs/fetch-context.md)
