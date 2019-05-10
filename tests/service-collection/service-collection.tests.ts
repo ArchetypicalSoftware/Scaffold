@@ -1,5 +1,4 @@
-import { IServiceCollection } from "../../src/abstractions";
-import { ServiceCollection } from "./../../src/service-collection/service-collection";
+import { IServiceCollection, ServiceCollection } from "../../src/service-collection";
 import { ServiceProvider } from "./../../src/service-collection/service-provider";
 
 class MyService {}

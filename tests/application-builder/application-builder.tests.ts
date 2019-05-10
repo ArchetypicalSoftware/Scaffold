@@ -1,8 +1,6 @@
-import { IApplicationBuilder, IFetchContext, IServiceProvider, IServiceWorkerConfiguration, RequestDelegate } from "../../src/abstractions";
+import { IFetchContext, IServiceProvider, IServiceWorkerConfiguration, RequestDelegate } from "../../src/abstractions";
 import { FetchEvent, Request } from "../service-worker.mocks";
-import { ApplicationBuilder } from "./../../src/application-builder/application-builder";
-import "./../../src/application-builder/run-extensions";
-import "./../../src/application-builder/use-next-extensions";
+import { ApplicationBuilder, IApplicationBuilder } from "./../../src/application-builder";
 import { FetchContext } from "./../../src/fetch/fetch-context";
 
 describe("Application Builder tests", () => {

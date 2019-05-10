@@ -1,4 +1,4 @@
-import { ILogEntry, IServiceProvider, LogLevel, IFetchContext } from "../abstractions";
+import { IFetchContext, ILogEntry, IServiceProvider, LogLevel } from "../abstractions";
 import { LogEntry } from "./log-entry";
 
 export class FetchContext implements IFetchContext {

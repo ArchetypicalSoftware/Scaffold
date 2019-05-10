@@ -1,10 +1,10 @@
-import { IFetchContext, ILogger, ILoggingBuilder, IServiceCollection,
-    IServiceWorkerBuilder, IServiceWorkerConfiguration, IStartup, LogLevel, RequestDelegate, StartupFactory } from "../abstractions";
-import { ApplicationBuilder } from "../application-builder/application-builder";
+import { IFetchContext, ILogger, ILoggingBuilder, IServiceWorkerBuilder, IServiceWorkerConfiguration, 
+    IStartup, LogLevel, RequestDelegate, StartupFactory } from "../abstractions";
+import { ApplicationBuilder } from "../application-builder";
 import { FetchContext } from "../fetch/fetch-context";
 import { DefaultLogger } from "../logging/default-logger";
 import { LoggingBuilder } from "../logging/logging-builder";
-import { ServiceCollection } from "../service-collection/service-collection";
+import { IServiceCollection, ServiceCollection } from "../service-collection";
 import { ServiceProvider } from "../service-collection/service-provider";
 import { ApplicationLifetime } from "./application-lifetime";
 

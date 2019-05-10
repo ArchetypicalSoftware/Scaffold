@@ -12,6 +12,7 @@
   },
   "author": "Archetypical.Software",
   "license": "ISC",
+  "private": true,
   "dependencies": {},
   "jest": {
     "testEnvironment": "node"
@@ -36,11 +37,9 @@
     "LICENSE",
     "CODE_OF_CONDUCT.md"
   ],
-  "types": "",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ArchetypicalSoftware/Scaffold"
   },
   "homepage": "https://archetypical.software/Product/Detail/Scaffold"
-  
 }

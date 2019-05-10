@@ -9,21 +9,18 @@ Example implementation
 ```ts
 // service-worker.ts
 
-import { IApplicationBuilder, IStartup, Scaffold, CacheStrategies } from "@archetypical/scaffold"
+import { IApplicationBuilder } from "@archetypical/scaffold/lib/application-builder"
+import { CacheStrategies, Scaffold } from "@archetypical/scaffold/lib/index"
 
-// List of assets necessary for offline capability
 const offlineAssets = [
     "/css/site.css",
     "/js/site.js",
     "/"
 ];
 
-class Startup implements IStartup {
-    configure(applicationBuilder: IApplicationBuilder): void {
-        applicationBuilder
-            // Fetch assets on install
-            .useInstallCache(offlineAssets)
-            // Background update assets when requested
+class Startup {
+    public configure(builder: IApplicationBuilder): void {
+        builder.useInstallCache(offlineAssets)
             .cache(offlineAssets, CacheStrategies.backgroundFetch);
     }
 }

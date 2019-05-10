@@ -1,27 +1,16 @@
 // Application Builder
 
-import { IApplicationBuilder, ICacheClearOptions, IFetchContext, IMiddleware, IRouteVariables, 
+import { ICacheClearOptions, IFetchContext, IMiddleware, IRouteVariables, 
     LogLevel, MiddlewareFactory, RequestDelegate } from "./abstractions";
-import { ApplicationBuilder } from "./application-builder/application-builder";
-import "./application-builder/cache-extensions";
-import "./application-builder/claim-clients-extensions";
-import "./application-builder/clear-cache-on-update-extensions";
-import "./application-builder/install-cache-extensions";
-import "./application-builder/map-extensions";
-import "./application-builder/middleware-extensions";
-import "./application-builder/run-extensions";
-import "./application-builder/use-when-extensions";
 
-export { IFetchContext, IApplicationBuilder, IMiddleware, MiddlewareFactory, RequestDelegate, ApplicationBuilder, 
+export { IFetchContext, IMiddleware, MiddlewareFactory, RequestDelegate, 
     IRouteVariables, ICacheClearOptions, LogLevel };
 
 // Service Collection
 
-import { IServiceCollection, IServiceProvider } from "./abstractions";
-import "./service-collection/configure-extension";
-import { ServiceCollection } from "./service-collection/service-collection";
+import { IServiceProvider } from "./abstractions";
 
-export { IServiceCollection, IServiceProvider, ServiceCollection };
+export { IServiceProvider };
 
 // Hosting
 

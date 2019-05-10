@@ -1,8 +1,6 @@
-import { IApplicationBuilder, IFetchContext, IServiceProvider, IServiceWorkerConfiguration } from "../../src/abstractions";
-import "../../src/application-builder/map-extensions";
-import "../../src/application-builder/run-extensions";
+import { IFetchContext, IServiceProvider, IServiceWorkerConfiguration } from "../../src/abstractions";
 import { FetchEvent, Request } from "../service-worker.mocks";
-import { ApplicationBuilder } from "./../../src/application-builder/application-builder";
+import { ApplicationBuilder, IApplicationBuilder } from "./../../src/application-builder";
 import { FetchContext } from "./../../src/fetch/fetch-context";
 
 describe("Map tests", () => {

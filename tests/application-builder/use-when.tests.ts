@@ -1,8 +1,6 @@
-import { IApplicationBuilder, IFetchContext, IServiceProvider, IServiceWorkerConfiguration } from "../../src/abstractions";
+import { IFetchContext, IServiceProvider, IServiceWorkerConfiguration } from "../../src/abstractions";
 import { FetchEvent, Request } from "../service-worker.mocks";
-import { ApplicationBuilder } from "./../../src/application-builder/application-builder";
-import "./../../src/application-builder/run-extensions";
-import "./../../src/application-builder/use-when-extensions";
+import { ApplicationBuilder, IApplicationBuilder } from "./../../src/application-builder";
 import { FetchContext } from "./../../src/fetch/fetch-context";
 
 describe("Use When tests", () => {

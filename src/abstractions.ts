@@ -1,3 +1,7 @@
+
+import { IApplicationBuilder } from "./application-builder";
+import { IServiceCollection } from "./service-collection";
+
 /**
  * Simple wrapper to contain log entries utilized in the 
  * request pipeline.
@@ -116,88 +120,6 @@ export interface IMiddleware {
 }
 
 /**
- * Used to create the request pipeline. This interface is intended to be extended
- * to accommodate additional functionality or implementations. Refer to extension 
- * implementations found in the documentation for examples.
- *
- * @export
- * @interface IApplicationBuilder
- */
-export interface IApplicationBuilder {
-
-    /**
-     * The final RequestDelegate to be called when no other RequestDelegates
-     * terminate the request pipeline.
-     *
-     * @type {RequestDelegate}
-     * @memberof IApplicationBuilder
-     */
-    defaultRequestDelegate: RequestDelegate;
-    
-    /**
-     * Service worker configuration object
-     *
-     * @type {IServiceWorkerConfiguration}
-     * @memberof IApplicationBuilder
-     */
-    config: IServiceWorkerConfiguration;
-
-    /**
-     * Service provider used by middleware to obtain service instances
-     *
-     * @type {IServiceProvider}
-     * @memberof IApplicationBuilder
-     */
-    services: IServiceProvider;
-
-    /**
-     * Sets an object to be shared between middleware implementations
-     *
-     * @template T Type of property
-     * @param {string} key Name of the property
-     * @param {T} value Value of the property
-     * @memberof IApplicationBuilder
-     */
-    setProperty<T extends object>(key: string, value: T): void;
-    
-    /**
-     * Gets an object to be shared between middleware implementations
-     *
-     * @template T Type of the property
-     * @param {string} key Name of the property
-     * @returns {T}
-     * @memberof IApplicationBuilder
-     */
-    getProperty<T extends object>(key: string): T;
-    
-    /**
-     * Clones the current instance of an IApplicationBuilder
-     *
-     * @returns {IApplicationBuilder}
-     * @memberof IApplicationBuilder
-     */
-    clone(): IApplicationBuilder;
-
-    /**
-     * Builds the request pipeline. This should be called during the Activate event 
-     * and stored for later use during any subsequent Fetch event.
-     *
-     * @returns {RequestDelegate}
-     * @memberof IApplicationBuilder
-     */
-    build(): RequestDelegate;
-
-    /**
-     * Adds a pass through a middleware
-     *
-     * @param {(requestDelegate: RequestDelegate) => RequestDelegate} middleware
-     * @returns {IApplicationBuilder}
-     * @memberof IApplicationBuilder
-     */
-    use(middleware: (requestDelegate: RequestDelegate) => RequestDelegate): IApplicationBuilder;
-}
-
-/**
  * Defines a class to have a constructor containing a request delegate as the first parameter
  * and resulting in an IMiddleware
  *
@@ -261,55 +183,6 @@ export interface IServiceDescriptor {
 }
 
 /**
- * Collection of services to be used by the IServiceProvider. This interface is intended 
- * to be extended to accommodate additional functionality or implementations. Refer to 
- * extension implementations found in the documentation for examples.
- *
- * @export
- * @interface IServiceCollection
- */
-export interface IServiceCollection {
-    /**
-     * List of service descriptors. Describes the service and their lifetimes.
-     *
-     * @type {Map<string, IServiceDescriptor>}
-     * @memberof IServiceCollection
-     */
-    serviceDescriptors: Map<string, IServiceDescriptor>;
-
-    /**
-     * Defines a service that will be instantiated new every call.
-     *
-     * @template T Type of service
-     * @param {string} key Name of the service
-     * @param {() => T} factory Factory of the service
-     * @memberof IServiceCollection
-     */
-    addTransient<T extends object>(key: string, factory: () => T): void;
-
-    /**
-     * Defines a service that will be instantiated once per fetch request
-     * and reused thereafter.
-     *
-     * @template T Type of service
-     * @param {string} key Name of the service
-     * @param {() => T} factory Factory of the service
-     * @memberof IServiceCollection
-     */
-    addScoped<T extends object>(key: string, factory: () => T): void;
-
-    /**
-     * Defines a service that will be instantiated once and reused thereafter.
-     *
-     * @template T Type of service
-     * @param {string} key Name of the service
-     * @param {() => T} factory Factory of the service
-     * @memberof IServiceCollection
-     */
-    addSingleton<T extends object>(key: string, factory: () => T): void;
-}
-
-/**
  * Provides instances of services initially defined in the IServiceCollection
  *
  * @export
@@ -367,7 +240,6 @@ export interface IStartup {
  * @type MiddlewareFactory
  */
 export type StartupFactory<T extends IStartup> = { new(): T };
-
 
 /**
  * Class intended to build the service worker 

@@ -1,8 +1,7 @@
-import { IApplicationBuilder, IFetchContext, IMiddleware, IServiceProvider, IServiceWorkerConfiguration, 
+import { IFetchContext, IMiddleware, IServiceProvider, IServiceWorkerConfiguration, 
     RequestDelegate } from "../../src/abstractions";
 import { FetchEvent, Request } from "../service-worker.mocks";
-import { ApplicationBuilder } from "./../../src/application-builder/application-builder";
-import "./../../src/application-builder/middleware-extensions";
+import { ApplicationBuilder, IApplicationBuilder } from "./../../src/application-builder";
 import { FetchContext } from "./../../src/fetch/fetch-context";
 
 

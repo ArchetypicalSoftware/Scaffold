@@ -10,21 +10,17 @@ This strategy is largely based upon the details found [here](https://www.typescr
 
 Let's take a look at an example:
 
-TODO REVISIT THIS WITH ACTUAL PACKAGE FOR PATH
-
 ```ts
 // foo-extensions.ts
 
-import { IApplicationBuilder } from "@archetypical/scaffold/lib/index"
-import { ApplicationBuilder } from "@archetypical/scaffold/lib/application-builder/application-builder"
+import { ILogger } from "@archetypical/scaffold/lib/index"
+import { IApplicationBuilder, ApplicationBuilder } from "@archetypical/scaffold/lib/application-builder"
 
-declare module "@archetypical/scaffold/lib/index" {
+declare module "@archetypical/scaffold/lib/application-builder" {
     interface IApplicationBuilder {
         useFoo(): IApplicationBuilder;
     }
-}
 
-declare module "@archetypical/scaffold/lib/application-builder/application-builder" {
     interface ApplicationBuilder {
         useFoo(): IApplicationBuilder;
     }
@@ -38,11 +34,10 @@ ApplicationBuilder.prototype.useFoo = function (): IApplicationBuilder {
 
 // sw.ts
 
-import { IStartup } from "@archetypical/scaffold/lib/index";
-import { IApplicationBuilder } from "@archetypical/scaffold/lib/abstractions"
+import { IApplicationBuilder } from "@archetypical/scaffold/lib/application-builder"
 import "./foo-extensions"
 
-class Startup implements IStartup {
+class Startup {
     public configure(builder: IApplicationBuilder): void {
         builder.useFoo();
     }
@@ -56,8 +51,7 @@ Let's break this down a bit.
 ```ts
 // foo-extensions.ts
 
-import { IApplicationBuilder } from "@archetypical/scaffold/lib/index"
-import { ApplicationBuilder } from "@archetypical/scaffold/lib/application-builder/application-builder"
+import { IApplicationBuilder, ApplicationBuilder } from "@archetypical/scaffold/lib/application-builder"
 ```
 
 Import the type you want in extend. In this case we are extending `IApplicationBuilder` so we'll want to pull in both the interface and concrete type.
@@ -67,13 +61,11 @@ Import the type you want in extend. In this case we are extending `IApplicationB
 ```ts
 // foo-extensions.ts continued...
 
-declare module "@archetypical/scaffold/lib/index" {
+declare module "@archetypical/scaffold/lib/application-builder" {
     interface IApplicationBuilder {
         useFoo(): IApplicationBuilder;
     }
-}
 
-declare module "@archetypical/scaffold/lib/application-builder/application-builder" {
     interface ApplicationBuilder {
         useFoo(): IApplicationBuilder;
     }
@@ -101,7 +93,7 @@ Provide the actual implementation of your extension.
 ```ts
 // sw.ts
 
-import { IApplicationBuilder } from "@archetypical/scaffold/lib/abstractions"
+import { IApplicationBuilder } from "@archetypical/scaffold/lib/application-builder"
 import "./foo-extensions"
 ```
 
