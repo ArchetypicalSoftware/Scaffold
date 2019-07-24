@@ -3,7 +3,7 @@
         "target": "es6",
         "module": "commonjs",
         "declaration": true,
-        "outDir": "./lib",
+        "outDir": "./dist",
         "strict": true,
         "lib": ["es6", "webworker"],
     },
@@ -12,6 +12,5 @@
     ],
     "exclude": [
         "node_modules",
-        "**/__tests__/*"
     ]
 }

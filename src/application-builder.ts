@@ -2,6 +2,7 @@
 import { CacheStrategy, IApplicationLifetime, ICacheClearOptions, ICacheConfiguration, IFetchContext, ILogger, 
     IMiddleware, IRouteConfiguration, IRouteVariables, IServiceProvider, IServiceWorkerConfiguration, 
     LogLevel, MiddlewareFactory, RequestDelegate } from "./abstractions";
+import { environment } from "./environment";
 import { Route } from "./routing/route";
 import { RouteVariables } from "./routing/route-variables";
 
@@ -265,7 +266,7 @@ export class ApplicationBuilder implements IApplicationBuilder {
 
         this.defaultRequestDelegate = (fetchContext: IFetchContext): Promise<IFetchContext> => {
             fetchContext.log(LogLevel.Debug, "Default handler: executing fetch");
-            fetchContext.response = fetch(fetchContext.request);
+            fetchContext.response = fetch(fetchContext.request as RequestInfo);
             fetchContext.event.respondWith(fetchContext.response);
             return Promise.resolve(fetchContext);
         };
@@ -355,6 +356,8 @@ export class ApplicationBuilder implements IApplicationBuilder {
     
         lifetime.activating.register(async () => {
             logger.debug("Attempting to clear unused cache entries");
+
+            const caches = environment.cacheFactory();
             
             const keys = await caches.keys();
     
@@ -377,6 +380,7 @@ export class ApplicationBuilder implements IApplicationBuilder {
     
         lifetime.installing.register(async () => {
             logger.debug(`Caching with key ${cacheKey!} the following files:\n\t\n${urlsToCache.join("\t\n")}`);
+            const caches = environment.cacheFactory();
             const cache = await caches.open(cacheKey!);
             await cache.addAll(urlsToCache);
         });

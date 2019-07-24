@@ -3,6 +3,14 @@ import { ServiceProvider } from "./../../src/service-collection/service-provider
 
 class MyService {}
 
+class MyConfigureObject {
+    public mySetting: string;
+    
+    constructor(mySetting: string){
+        this.mySetting = mySetting;
+    }
+} 
+
 describe("Service Collection tests", () => {
     let serviceCollection: IServiceCollection;
     const serviceName: string = "MyService";
@@ -72,6 +80,20 @@ describe("Service Collection tests", () => {
         expect(instance3).toBe(instance4);
 
         expect(instance1).toBe(instance3);
+    });
+
+    test("configure", () => {
+        const configureObject = new MyConfigureObject("asdf");
+        serviceCollection.configure<MyConfigureObject>("MyConfigureObject", configureObject);
+
+        const provider = new ServiceProvider(serviceCollection.serviceDescriptors, container);
+        const instance1 = provider.getInstance<MyConfigureObject>("MyConfigureObject");
+        const instance2 = provider.getInstance<MyConfigureObject>("MyConfigureObject");
+
+        expect(instance1).toBeTruthy();
+        expect(instance2).toBeTruthy();
+        expect(instance1).toBe(configureObject);
+        expect(instance2).toBe(configureObject);
     });
 
     test("Service factory overridden with multiple inserts", () => {

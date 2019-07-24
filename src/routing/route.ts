@@ -1,4 +1,4 @@
-import { HttpMethod, IRouteConfiguration, IRouteVariables } from "../abstractions";
+import { HttpMethod, IRouteConfiguration, IRouteVariables, IRequest } from "../abstractions";
 import { RouteElement, RouteElementType } from "./route-element";
 import { RouteVariables } from "./route-variables";
 import { UrlEx } from "./url-ex";
@@ -33,7 +33,7 @@ export class Route {
         });
     }
 
-    public isMatch(request: Request): boolean {
+    public isMatch(request: IRequest): boolean {
         if ((this.configuration.methods as string[]).indexOf(request.method.toUpperCase()) === -1) {
             return false;
         }
@@ -64,6 +64,8 @@ export class Route {
                     tokenIndex = url.pathTokens.length - 1;
                 }
             } else if (!element.isMatch(url.pathTokens[tokenIndex])) {
+                return false;
+            } else if (tokenIndex === url.pathTokens.length - 1 && url.fileExtension && !this.fileExtension) {
                 return false;
             } else {
                 routeIndex++;
@@ -105,7 +107,7 @@ export class Route {
         return true;
     }
 
-    public getVariables(request: Request, base?: string | undefined): IRouteVariables {
+    public getVariables(request: IRequest, base?: string | undefined): IRouteVariables {
         const url = new UrlEx(request.url, base);
         const variables = new RouteVariables(new Map<string, string>(), new Map<string, string>(), url);
 
@@ -137,11 +139,6 @@ export class Route {
             tokenIndex++;
         }
 
-        // Check for outstanding double wildcard
-        if (routeIndex === this.elements.length - 1 && tokenIndex === url.pathTokens.length) {
-            return variables;
-        }
-
         if (this.fileExtension && this.fileExtension.type === RouteElementType.Variable) {
             variables.path.set(this.fileExtension.value, url.fileExtension);
         }
@@ -150,9 +147,7 @@ export class Route {
             if (routeElement.type === RouteElementType.Variable) {
                 const value = url.searchParams.get(key);
 
-                if (value) {
-                    variables.query.set(key, url.searchParams.get(key) as string);
-                }
+                variables.query.set(key, url.searchParams.get(key) as string);
             }
         });
 

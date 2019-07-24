@@ -15,7 +15,7 @@ describe("Cache tests", () => {
         };
     };
 
-    const getFetchContext = (path: string) => new FetchContext(new FetchEvent(new Request(`${origin}${path}`)));
+    const getFetchContext = (path: string) => new FetchContext(new FetchEvent(`${origin}${path}`));
 
     beforeEach(() => {
         applicationBuilder = new ApplicationBuilder({ origin } as IServiceWorkerConfiguration,

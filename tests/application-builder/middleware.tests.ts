@@ -27,7 +27,7 @@ describe("Middleware tests", () => {
     beforeEach(() => {
         applicationBuilder = new ApplicationBuilder(null as unknown as IServiceWorkerConfiguration, null as unknown as IServiceProvider);
         applicationBuilder.defaultRequestDelegate = (f: IFetchContext) => Promise.resolve(f);
-        fetchContext = new FetchContext(new FetchEvent(new Request("/testpath")));
+        fetchContext = new FetchContext(new FetchEvent("/testpath"));
     });
 
     test("basic", async (done) => {

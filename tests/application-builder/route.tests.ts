@@ -1,6 +1,7 @@
 import { IRouteConfiguration } from "../../src/abstractions";
 import { Route } from "./../../src/routing/route";
 import { Request } from "./../service-worker.mocks";
+import { RouteElement } from "../../src/routing/route-element";
 
 describe("Route tests", () => {
     const base = "https://www.example.com";
@@ -39,10 +40,23 @@ describe("Route tests", () => {
 
     test("query variables", () => {
         const route = new Route("/Path?param1={param1Value}&param2=notavariable", base);
-        const request = new Request(`${base}/Path?param1=value&param2=notavariable`);
+        let request = new Request(`${base}/Path?param1=value&param2=notavariable`);
 
         expect(route.getVariables(request).query.size).toBe(1);
         expect(route.getVariables(request).query.get("param1")).toBe("value");
+
+        request = new Request(`${base}/Path?param1=`);
+        expect(route.getVariables(request).query.size).toBe(1);
+        expect(route.getVariables(request).query.get("param1")).toBe("");
+    });
+
+    test("path wildcard variables", () => {
+        const route = new Route("/area/{param1}/**", base);
+        const variables = route.getVariables(new Request(`${base}/area/to/evaluate?hello=world`));
+
+        expect(variables.path.size).toBe(1);
+        expect(variables.path.get("param1")).toBe("to");
+        expect(variables.query.size).toBe(0);
     });
 
     test("query match", () => {
@@ -70,12 +84,19 @@ describe("Route tests", () => {
     });
 
     test("end double wildcard", () => {
-        const route = new Route("/**", base);
+        let route = new Route("/**", base);
 
         expect(route.isMatch(new Request(`${base}/asdf/asdf/asdf/file.js`))).toBe(true);
         expect(route.isMatch(new Request(`${base}/asdf/asdf/asdf`))).toBe(true);
         expect(route.isMatch(new Request(`${base}/asdf/asdf/asdf?param=value`))).toBe(true);
         expect(route.isMatch(new Request(`${base}/`))).toBe(true);
+
+        route = new Route("/asdf/**", base);        
+        expect(route.isMatch(new Request(`${base}/asdf/asdf/asdf/file.js`))).toBe(true);
+        expect(route.isMatch(new Request(`${base}/asdf/asdf/asdf`))).toBe(true);
+        expect(route.isMatch(new Request(`${base}/asdf/asdf/asdf?param=value`))).toBe(true);
+        expect(route.isMatch(new Request(`${base}/asdf.js`))).toBe(false);
+        expect(route.isMatch(new Request(`${base}/`))).toBe(false);
     });
 
     test("wildcard double wildcard combo", () => {
@@ -130,5 +151,20 @@ describe("Route tests", () => {
 
         route = new Route("/asdf", base, { methods: ["get"] } as any);
         expect(route.isMatch(request)).toBe(true); 
+    });
+
+    test("origin mismatch", () => {
+        const request = new Request(`${base}/asdf}`);
+
+        const route = new Route("https://www.notbase.com/asdf");
+        expect(route.isMatch(request)).toBe(false);
+    });
+
+    test("route-element", () => {
+        const routeElement = new RouteElement("asdf");
+
+        expect(routeElement.isMatch(null)).toBe(false);
+        expect(routeElement.isMatch("")).toBe(false);
+        expect(routeElement.isMatch("asdf")).toBe(true);
     });
 });

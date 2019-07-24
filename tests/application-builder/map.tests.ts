@@ -11,7 +11,7 @@ describe("Map tests", () => {
         applicationBuilder = new ApplicationBuilder({ origin: "http://www.example.com" } as IServiceWorkerConfiguration,
                                                     null as unknown as IServiceProvider);
         applicationBuilder.defaultRequestDelegate = (f: IFetchContext) => Promise.resolve(f);
-        fetchContext = new FetchContext(new FetchEvent(new Request("http://www.example.com/testpath")));
+        fetchContext = new FetchContext(new FetchEvent("http://www.example.com/testpath"));
     });
 
     test("basic", async (done) => {

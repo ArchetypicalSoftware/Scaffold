@@ -1,16 +1,16 @@
-import { IFetchContext, ILogEntry, IServiceProvider, LogLevel } from "../abstractions";
+import { IFetchContext, IFetchEvent, ILogEntry, IRequest, IResponse, IServiceProvider, LogLevel } from "../abstractions";
 import { LogEntry } from "./log-entry";
 
 export class FetchContext implements IFetchContext {
-    public request: Request;
-    public response: Promise<Response>;
-    public event: FetchEvent;
+    public request: IRequest;
+    public response: Promise<IResponse>;
+    public event: IFetchEvent;
     public services: IServiceProvider;
     public logEntries: ILogEntry[];
 
-    constructor(fetchEvent: FetchEvent, services?: IServiceProvider) {
+    constructor(fetchEvent: IFetchEvent, services?: IServiceProvider) {
         this.request = fetchEvent.request;
-        this.response = null as unknown as Promise<Response>;
+        this.response = null as unknown as Promise<IResponse>;
         this.event = fetchEvent;
         this.services = services as IServiceProvider;
         this.logEntries = [];

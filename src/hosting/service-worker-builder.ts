@@ -1,5 +1,5 @@
-import { IFetchContext, ILogger, ILoggingBuilder, IServiceWorkerBuilder, IServiceWorkerConfiguration, 
-    IStartup, LogLevel, RequestDelegate, StartupFactory } from "../abstractions";
+import { IFetchContext, IFetchEvent, ILogger, ILoggingBuilder, IServiceWorkerBuilder, 
+    IServiceWorkerConfiguration, IStartup, LogLevel, RequestDelegate, StartupFactory } from "../abstractions";
 import { ApplicationBuilder } from "../application-builder";
 import { FetchContext } from "../fetch/fetch-context";
 import { DefaultLogger } from "../logging/default-logger";
@@ -110,7 +110,7 @@ export class ServiceWorkerBuilder implements IServiceWorkerBuilder {
 
         self.addEventListener("fetch", (event) => {
             (event as ExtendableEvent).waitUntil((async () => {
-                const fetchContext: IFetchContext = new FetchContext(event as FetchEvent, 
+                const fetchContext: IFetchContext = new FetchContext(event as unknown as IFetchEvent, 
                     new ServiceProvider(this.services.serviceDescriptors, this.singletonContainer));
                 const startTime = performance.now();
                 let timeElapsed: string = "";

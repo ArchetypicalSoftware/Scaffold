@@ -1,7 +1,8 @@
 import { IFetchContext, IServiceProvider, IServiceWorkerConfiguration, RequestDelegate } from "../../src/abstractions";
-import { FetchEvent, Request } from "../service-worker.mocks";
+import { environment } from "../../src/environment";
+import { FetchContext } from "../../src/fetch/fetch-context";
+import { FetchEvent, MockCache, MockCacheStorage } from "../service-worker.mocks";
 import { ApplicationBuilder, IApplicationBuilder } from "./../../src/application-builder";
-import { FetchContext } from "./../../src/fetch/fetch-context";
 
 describe("Application Builder tests", () => {
     let applicationBuilder: IApplicationBuilder;
@@ -10,7 +11,7 @@ describe("Application Builder tests", () => {
     beforeEach(() => {
         applicationBuilder = new ApplicationBuilder(null as unknown as IServiceWorkerConfiguration, null as unknown as IServiceProvider);
         applicationBuilder.defaultRequestDelegate = (f: IFetchContext) => Promise.resolve(f);
-        fetchContext = new FetchContext(new FetchEvent(new Request("/testpath")));
+        fetchContext = new FetchContext(new FetchEvent("/testpath"));
     });
 
     test("use", async (done) => {

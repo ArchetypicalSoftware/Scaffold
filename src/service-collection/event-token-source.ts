@@ -17,22 +17,9 @@ export class EventTokenSource {
         if (!this.hasFired) {
             this.hasFired = true;
 
-            const promises: Array<Promise<void>> = [];
-
-            this.handlers.forEach((handler) => {
+            await Promise.all(this.handlers.map(async (handler) => {
                 try {
-                    promises.push(handler());
-                } catch (err) {
-                    if (logger) {
-                        logger.error(err);
-                    }
-                }
-            });
-
-            // Wait for all the promises even if there are rejections
-            await Promise.all(promises.map(async (promise) => {
-                try {
-                    return promise;
+                    await handler();
                 } catch (e) {
                     if (logger) {
                         logger.error(e);
