@@ -2313,6 +2313,38 @@ locate-path@^3.0.0:
     p-locate "^3.0.0"
     path-exists "^3.0.0"
 
+lodash._basefor@^3.0.0:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/lodash._basefor/-/lodash._basefor-3.0.3.tgz#7550b4e9218ef09fad24343b612021c79b4c20c2"
+  integrity sha1-dVC06SGO8J+tJDQ7YSAhx5tMIMI=
+
+lodash.isarguments@^3.0.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/lodash.isarguments/-/lodash.isarguments-3.1.0.tgz#2f573d85c6a24289ff00663b491c1d338ff3458a"
+  integrity sha1-L1c9hcaiQon/AGY7SRwdM4/zRYo=
+
+lodash.isarray@^3.0.0:
+  version "3.0.4"
+  resolved "https://registry.yarnpkg.com/lodash.isarray/-/lodash.isarray-3.0.4.tgz#79e4eb88c36a8122af86f844aa9bcd851b5fbb55"
+  integrity sha1-eeTriMNqgSKvhvhEqpvNhRtfu1U=
+
+lodash.isplainobject@^3.0.2:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/lodash.isplainobject/-/lodash.isplainobject-3.2.0.tgz#9a8238ae16b200432960cd7346512d0123fbf4c5"
+  integrity sha1-moI4rhayAEMpYM1zRlEtASP79MU=
+  dependencies:
+    lodash._basefor "^3.0.0"
+    lodash.isarguments "^3.0.0"
+    lodash.keysin "^3.0.0"
+
+lodash.keysin@^3.0.0:
+  version "3.0.8"
+  resolved "https://registry.yarnpkg.com/lodash.keysin/-/lodash.keysin-3.0.8.tgz#22c4493ebbedb1427962a54b445b2c8a767fb47f"
+  integrity sha1-IsRJPrvtsUJ5YqVLRFssinZ/tH8=
+  dependencies:
+    lodash.isarguments "^3.0.0"
+    lodash.isarray "^3.0.0"
+
 lodash.sortby@^4.7.0:
   version "4.7.0"
   resolved "https://registry.yarnpkg.com/lodash.sortby/-/lodash.sortby-4.7.0.tgz#edd14c824e2cc9c1e0b0a1b42bb5210516a42438"
@@ -2828,6 +2860,11 @@ path-parse@^1.0.6:
   resolved "https://registry.yarnpkg.com/path-parse/-/path-parse-1.0.6.tgz#d62dbb5679405d72c4737ec58600e9ddcf06d24c"
   integrity sha512-GSmOT2EbHrINBf9SR7CDELwlJ8AENk3Qn7OikK4nFYAu3Ote2+JYNVvkpAEQm3/TLNEJFD/xZJjzyxg3KBWOzw==
 
+path-to-regexp@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/path-to-regexp/-/path-to-regexp-5.0.0.tgz#e56dd58778b9dc06e76f0f3e39e741bbddc0bd26"
+  integrity sha512-VOQVA+0mivusQfaveeWlrW7ddXKuStHMTdovn/1epf7cEpUL4dpzGl7eq8ho96H9w90/q66yJLsqn84jSCfkmQ==
+
 path-type@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/path-type/-/path-type-3.0.0.tgz#cef31dc8e0a1a3bb0d105c0cd97cf3bf47f4e36f"
@@ -2984,6 +3021,13 @@ readable-stream@^2.0.1, readable-stream@^2.0.6:
     safe-buffer "~5.1.1"
     string_decoder "~1.1.1"
     util-deprecate "~1.0.1"
+
+realistic-structured-clone@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/realistic-structured-clone/-/realistic-structured-clone-1.0.1.tgz#1abe82af0b80cd7b109fdaf5d29308032852d45d"
+  integrity sha1-Gr6CrwuAzXsQn9r10pMIAyhS1F0=
+  dependencies:
+    lodash.isplainobject "^3.0.2"
 
 realpath-native@^1.1.0:
   version "1.1.0"
@@ -3177,13 +3221,13 @@ semver@^6.0.0:
   resolved "https://registry.yarnpkg.com/semver/-/semver-6.2.0.tgz#4d813d9590aaf8a9192693d6c85b9344de5901db"
   integrity sha512-jdFC1VdUGT/2Scgbimf7FSx9iJLXoqfglSF+gJeuNWVpiE37OIbc1jywR/GJyFdz3mnkz2/id0L0J/cr0izR5A==
 
-service-worker-mock@^2.0.3:
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/service-worker-mock/-/service-worker-mock-2.0.3.tgz#a27380d76e000e5633e13fc7b3601ae6dbcc59f5"
-  integrity sha512-LqTIVgm63EylNZldkpHxyC+iimxJwV6ymA4QaoOK+9d8Pt2kNcLgro96lH4Xgy0VYSzI5Qgr6eq2pikC0rxNCQ==
+service-worker-mock@^2.0.5:
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/service-worker-mock/-/service-worker-mock-2.0.5.tgz#89d47ec1571130114d4deed66d69bdcfee4a4545"
+  integrity sha512-yk6NCFnRWGfbOlP+IS4hEbJnGU8dVgtodAAKLxhkTPsOmaES44XVSWTNozK6KwI+p/0PDRrFsb2RjTMhvXiNkA==
   dependencies:
     dom-urls "^1.1.0"
-    shelving-mock-indexeddb "github:philipwalton/shelving-mock-indexeddb#621b7a275568051846d20e3e557fa1101418b1d1"
+    shelving-mock-indexeddb "^1.1.0"
     url-search-params "^0.10.0"
     w3c-hr-time "^1.0.1"
 
@@ -3228,16 +3272,18 @@ shellwords@^0.1.1:
   resolved "https://registry.yarnpkg.com/shellwords/-/shellwords-0.1.1.tgz#d6b9181c1a48d397324c84871efbcfc73fc0654b"
   integrity sha512-vFwSUfQvqybiICwZY5+DAWIPLKsWO31Q91JSKl3UYv+K5c2QRPzn0qzec6QPu1Qc9eHYItiP3NdJqNVqetYAww==
 
-shelving-mock-event@^1.0.8:
+shelving-mock-event@^1.0.12:
   version "1.0.12"
   resolved "https://registry.yarnpkg.com/shelving-mock-event/-/shelving-mock-event-1.0.12.tgz#401dc90b3b49cbf2a817ecf2dd5a83eff4de2e14"
   integrity sha512-2F+IZ010rwV3sA/Kd2hnC1vGNycsxeBJmjkXR8+4IOlv5e+Wvj+xH+A8Cv8/Z0lUyCut/HcxSpeDccYTVtnuaQ==
 
-"shelving-mock-indexeddb@github:philipwalton/shelving-mock-indexeddb#621b7a275568051846d20e3e557fa1101418b1d1":
-  version "1.0.5"
-  resolved "https://codeload.github.com/philipwalton/shelving-mock-indexeddb/tar.gz/621b7a275568051846d20e3e557fa1101418b1d1"
+shelving-mock-indexeddb@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/shelving-mock-indexeddb/-/shelving-mock-indexeddb-1.1.0.tgz#e065a8d7987d182d058e2b55f0f79a52d48a38f1"
+  integrity sha512-akHJAmGL/dplJ4FZNxPxVbOxMw8Ey6wAnB9+3+GCUNqPUcJaskS55GijxZtarTfAYB4XQyu+FLtjcq2Oa3e2Lg==
   dependencies:
-    shelving-mock-event "^1.0.8"
+    realistic-structured-clone "^1.0.1"
+    shelving-mock-event "^1.0.12"
 
 signal-exit@^3.0.0, signal-exit@^3.0.2:
   version "3.0.2"
@@ -3470,6 +3516,40 @@ supports-color@^6.1.0:
   integrity sha512-qe1jfm1Mg7Nq/NSh6XE24gPXROEVsWHxC1LIx//XNlD9iw7YZQGjZNjYN7xGaEG6iKdA8EtNFW6R0gjnVXp+wQ==
   dependencies:
     has-flag "^3.0.0"
+
+swork-claim-clients@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/swork-claim-clients/-/swork-claim-clients-1.0.2.tgz#dd8e6e56b5abc48e88f28387e126e710071bfa07"
+  integrity sha512-RtMMRbtv/CkHWwQq/1EmZgA5WCqQKw9QaFsaf/mymJb5tQdC8itm6AEvngggn1kS/Ql+pp65ilCiawv93AtKfw==
+  dependencies:
+    swork "^1.0.0"
+
+swork-logger@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/swork-logger/-/swork-logger-1.0.1.tgz#b6f58d84db2109f56f8a6d7bf944ba224f7b0345"
+  integrity sha512-joNZ+Y1BAQrdWGunao6OVOt5FOciyTvqjkKz/wpK6ZXnDvvf/fW49swWsw6V/ZpNQ43gefr7LvR5QqWNBQCYIQ==
+  dependencies:
+    swork "^1.0.0"
+
+swork-router@^1.3.3:
+  version "1.3.3"
+  resolved "https://registry.yarnpkg.com/swork-router/-/swork-router-1.3.3.tgz#c85896955c2acca7dac0cda8648eb2e3e77442c5"
+  integrity sha512-+Fr6X+KeZev0jkcBWwzrc7cZQ2k5K0TTEP3gXBiref39doY529Gnzb7HlyfuddzyCdC5To584k8afTSVOTYJwA==
+  dependencies:
+    path-to-regexp "^5.0.0"
+    swork "^1.4.3"
+
+swork-when@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/swork-when/-/swork-when-1.0.0.tgz#b9bc5b94fab88bf00a80e4a492f5164150d1b569"
+  integrity sha512-ZfGGSpfyipvE5PD/ItEKdhvq5r1eY2xTnTdRWnW33zXSQ71/vHTxFi2AwCtREGjI6mND4YiWgjfPjhLDcWX3dg==
+  dependencies:
+    swork "^1.0.0"
+
+swork@^1.0.0, swork@^1.4.3, swork@^1.5.5:
+  version "1.5.5"
+  resolved "https://registry.yarnpkg.com/swork/-/swork-1.5.5.tgz#3f89762fcfa1769170496e89bcb37feae9b89246"
+  integrity sha512-MyrteeiXQNUyT3vZUxeMtPrTj3ndIzlXta2DR6l0AsKEvcAwWNr1CXitf73Us/OTXEI83rLCzj2k8RIktnkn1A==
 
 symbol-tree@^3.2.2:
   version "3.2.4"

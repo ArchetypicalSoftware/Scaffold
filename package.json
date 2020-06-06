@@ -12,7 +12,13 @@
   },
   "author": "Archetypical.Software",
   "license": "ISC",
-  "dependencies": {},
+  "dependencies": {
+    "swork": "^1.5.5",
+    "swork-claim-clients": "^1.0.2",
+    "swork-logger": "^1.0.1",
+    "swork-router": "^1.3.3",
+    "swork-when": "^1.0.0"
+  },
   "jest": {
     "testEnvironment": "node"
   },
@@ -20,7 +26,7 @@
     "@types/jest": "^24.0.6",
     "@types/service-worker-mock": "^2.0.0",
     "jest": "^24.1.0",
-    "service-worker-mock": "^2.0.3",
+    "service-worker-mock": "^2.0.5",
     "ts-jest": "^24.0.0",
     "ts-loader": "^5.3.3",
     "tslint": "^5.14.0",

@@ -4,5 +4,10 @@
         "node_modules": true
     },
     "editor.fontLigatures": true,
-    "editor.fontFamily": "Fira Code"
+    "editor.fontFamily": "Fira Code",
+    "cSpell.words": [
+        "asdf",
+        "nottestpath",
+        "testpath"
+    ]
 }
