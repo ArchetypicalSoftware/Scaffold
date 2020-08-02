@@ -1,10 +1,8 @@
-import { EventType, FetchContext, Middleware, Swork } from "swork";
-import { claimClients } from "swork-claim-clients";
+import { EventType, Middleware, Swork } from "swork";
 import { Router } from "swork-router";
 import { when } from "swork-when";
 import { IApplicationBuilder, ICacheClearOptions, IHostingEnvironment, IRouteConfiguration, IServiceProvider } from "./abstractions";
 import { middlewares } from "./middlewares";
-import { logger } from "swork-logger";
 
 // @ts-ignore
 declare var clients: Clients;

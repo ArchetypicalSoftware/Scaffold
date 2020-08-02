@@ -18,7 +18,7 @@ export class Scaffold {
      * @returns {IServiceWorkerBuilder}
      * @memberof ServiceWorker
      */
-    public static createDefaultBuilder(config: IServiceWorkerConfiguration | string): IServiceWorkerBuilder {
+    public static createBuilder(config: IServiceWorkerConfiguration | string): IServiceWorkerBuilder {
         if (typeof(config) === "string") {
             config = {
                 version: config,

@@ -291,6 +291,17 @@ export interface IRouteConfiguration {
  * @interface ApplicationBuilder
  */
 export interface IApplicationBuilder {
+
+    /**
+     * Services available to the application
+     */
+    services: IServiceProvider;
+
+    /**
+     * Hosting environment configuration details
+     */
+    env: IHostingEnvironment;
+
     /**
      * Attempt to claim all available clients within scope.
      * See more at https://developer.mozilla.org/en-US/docs/Web/API/Clients/claim
@@ -354,18 +365,51 @@ export interface IApplicationBuilder {
     useWhen(predicate: (fetchContext: FetchContext) => boolean | Promise<boolean>,
             middleware: Middleware): IApplicationBuilder;
 
+    /**
+     * Adds a logging middleware to log every request and response
+     * 
+     * @param useInProduction Indicate if logging should happen in production
+     */        
     useLogging(useInProduction?: boolean): IApplicationBuilder;
 
+    /**
+     * Define event handlers for various service worker events
+     * 
+     * @param eventType Event to add a handler for
+     * @param handlers Event handler
+     */
     on(eventType: EventType, ...handlers: Array<(event: any) => Promise<void> | void>): IApplicationBuilder;
 
+    /**
+     * Add a middleware
+     * 
+     * @param middleware Middleware to be added 
+     */
     use(middleware: Middleware): IApplicationBuilder;
 
+    /**
+     * Build the request pipeline.
+     */
     build(): Swork;
 
+    /**
+     * Clone the IApplicationBuilder
+     */
     clone(): IApplicationBuilder;
 
+    /**
+     * Get a property from the application builder
+     * 
+     * @param key Key of the object
+     */
     getProperty<T extends object | string | number>(key: string): T;
 
+    /**
+     * Set a property on the application builder 
+     * 
+     * @param key Key of the object
+     * @param value Object to be stored
+     */
     setProperty<T extends object | string | number>(key: string, value: T): void;
 }
 

@@ -10,7 +10,3 @@ export { IServiceCollection, IServiceProvider };
 import { IServiceWorkerBuilder, IStartup, StartupFactory } from "./abstractions";
 import { Scaffold } from "./scaffold";
 export { IServiceWorkerBuilder, IStartup, StartupFactory, Scaffold };
-
-// Logging
-import { ILogger, LogLevel } from "./abstractions";
-export { ILogger, LogLevel };

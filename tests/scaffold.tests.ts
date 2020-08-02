@@ -21,17 +21,17 @@ describe("Scaffold tests", () => {
     });
 
     test("String config", () => {
-        const builder = Scaffold.createDefaultBuilder("my-version");
+        const builder = Scaffold.createBuilder("my-version");
 
         expect(builder).toBeTruthy();
 
         expect(configuration.version).toBe("my-version");
         expect(configuration.origin).toBe(originalOrigin);
         expect(configuration.environment).toBe(originalEnvironment);
-        });
+    });
 
     test("Literal config", () => {
-        const builder = Scaffold.createDefaultBuilder({
+        const builder = Scaffold.createBuilder({
             environment: "production",
             origin: "http://www.example.com",
             version: "my-version",
@@ -41,5 +41,5 @@ describe("Scaffold tests", () => {
         expect(configuration.environment).toBe("production");
         expect(configuration.origin).toBe("http://www.example.com");
         expect(configuration.version).toBe("my-version");
-});
+    });
 });
