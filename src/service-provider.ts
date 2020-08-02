@@ -1,4 +1,4 @@
-import { IServiceDescriptor, IServiceProvider, ServiceLifetime } from "../abstractions";
+import { IServiceDescriptor, IServiceProvider, ServiceLifetime } from "./abstractions";
 import { ServiceInstanceWrapper } from "./service-instance-wrapper";
 
 export class ServiceProvider implements IServiceProvider {

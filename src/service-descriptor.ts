@@ -1,4 +1,4 @@
-import { IServiceDescriptor, ServiceLifetime } from "../abstractions";
+import { IServiceDescriptor, ServiceLifetime } from "./abstractions";
 
 export class ServiceDescriptor implements IServiceDescriptor {
     public key: string;

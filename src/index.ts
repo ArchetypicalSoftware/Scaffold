@@ -1,33 +1,12 @@
 // Application Builder
-
-import { ICacheClearOptions, IFetchContext, IMiddleware, IRouteVariables, 
-    LogLevel, MiddlewareFactory, RequestDelegate } from "./abstractions";
-
-export { IFetchContext, IMiddleware, MiddlewareFactory, RequestDelegate, 
-    IRouteVariables, ICacheClearOptions, LogLevel };
+import { IApplicationBuilder, ICacheClearOptions, IHostingEnvironment  } from "./abstractions";
+export { IApplicationBuilder, ICacheClearOptions, IHostingEnvironment };
 
 // Service Collection
-
-import { IServiceProvider } from "./abstractions";
-
-export { IServiceProvider };
+import { IServiceCollection, IServiceProvider } from "./abstractions";
+export { IServiceCollection, IServiceProvider };
 
 // Hosting
-
 import { IServiceWorkerBuilder, IStartup, StartupFactory } from "./abstractions";
-import { Scaffold } from "./hosting/scaffold";
-
+import { Scaffold } from "./scaffold";
 export { IServiceWorkerBuilder, IStartup, StartupFactory, Scaffold };
-
-// Logging
-
-import { ILogger, ILoggingBuilder } from "./abstractions";
-
-export { ILogger, ILoggingBuilder };
-
-// Cache Strategies
-
-import { CacheStrategy } from "./abstractions";
-import { CacheStrategies } from "./cache-strategies/cache-strategies";
-
-export { CacheStrategy, CacheStrategies };

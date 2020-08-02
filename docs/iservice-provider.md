@@ -12,12 +12,6 @@ Defines a mechanism for retrieving a service object; that is, an object that pro
  getInstance<T extends object>(key: string): T;
 ```
 
-### Examples
-
-```ts
-const myService = provider.getInstance<IMyService>("IMyService");
-```
-
 ## Notes
 
 The `IServiceProvider` instance is available on the `services` property of  `IApplicationBuilder` and `IFetchContext`.

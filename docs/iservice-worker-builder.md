@@ -8,8 +8,6 @@ Defines an service worker initialization utility.
 ### Methods
 
 ```ts
-// Configures the ILogger instance (optional)
-configureLogging(configuration: (builder: ILoggingBuilder) => void): IServiceWorkerBuilder;
 
 // Indicates which Startup class will build the services and fetch pipeline. This
 // method must be called.
@@ -23,8 +21,7 @@ build(): void;
 
 ```ts
 Scaffold
-    .createDefaultBuilder("1.0.0")
-    .configureLogging((options) => options.logLevel = LogLevel.Info)
+    .createBuilder("1.0.0")
     .useStartup(Startup)
     .build();
 ```

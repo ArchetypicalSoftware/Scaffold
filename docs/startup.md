@@ -8,10 +8,10 @@ The `IStartup` interface represents a class that configures services and the app
 
 ```ts
 // Configures the fetch request pipeline.
-configure(applicationBuilder: IApplicationBuilder, logger?: ILogger): void;
+configure(applicationBuilder: IApplicationBuilder): void;
 
 // Configures any services
-configureServices?(services: IServiceCollection, logger?: ILogger): void;
+configureServices?(services: IServiceCollection): void;
 ```
 
 The `IStartup` implementation is used in the `UseStartup<T>` method of `IServiceWorkerBuilder`.
@@ -23,21 +23,19 @@ The `configure` method defines the fetch pipeline by using the `IApplicationBuil
 ## Examples
 
 ```ts
-const offlineAssets = [
-    ...
-];
+import { strategies } from "swork-cache";
+
+const offlineAssetPaths = [ /* ... */ ];
 
 class Startup implements IStartup {
-    public configure(applicationBuilder: IApplicationBuilder, logger?: ILogger): void {
+    public configure(applicationBuilder: IApplicationBuilder): void {
         applicationBuilder
             .useInstallCache(offlineAssets)
-            .cache(offlineAssets, CacheStrategies.backgroundFetch);
-
+            .map(offlineAssets, strategies.backgroundFetch());
     }
 }
 
-Scaffold
-    .createDefaultBuilder("1.0.0")
+Scaffold.createBuilder("1.0.0")
     .useStartup(Startup)
     .build();
 ```

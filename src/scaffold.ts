@@ -1,4 +1,5 @@
-import { IServiceWorkerBuilder, IServiceWorkerConfiguration } from "../abstractions";
+import { configuration } from "swork";
+import { IServiceWorkerBuilder, IServiceWorkerConfiguration } from "./abstractions";
 import { ServiceWorkerBuilder } from "./service-worker-builder";
 
 /**
@@ -17,12 +18,16 @@ export class Scaffold {
      * @returns {IServiceWorkerBuilder}
      * @memberof ServiceWorker
      */
-    public static createDefaultBuilder(config: IServiceWorkerConfiguration | string): IServiceWorkerBuilder {
+    public static createBuilder(config: IServiceWorkerConfiguration | string): IServiceWorkerBuilder {
         if (typeof(config) === "string") {
             config = {
                 version: config,
             } as IServiceWorkerConfiguration;
         }
+
+        configuration.environment = config.environment || configuration.environment;
+        configuration.origin = config.origin || configuration.origin;
+        configuration.version = config.version;
 
         return new ServiceWorkerBuilder(config);
     }

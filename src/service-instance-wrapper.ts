@@ -1,4 +1,4 @@
-import { IServiceDescriptor } from "../abstractions";
+import { IServiceDescriptor } from "./abstractions";
 
 export class ServiceInstanceWrapper {
     public descriptor: IServiceDescriptor;
