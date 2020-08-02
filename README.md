@@ -9,14 +9,16 @@ Example implementation
 ```ts
 // service-worker.ts
 
-import { IApplicationBuilder } from "@archetypical/scaffold/lib/application-builder"
-import { Scaffold } from "@archetypical/scaffold/lib/index"
+import { IApplicationBuilder, Scaffold } from "@archetypical/scaffold";
+import { strategies } from "swork-cache";
 
 const offlineAssets = ["/css/site.css", "/js/site.js", "/"];
 
 class Startup {
     public configure(builder: IApplicationBuilder): void {
-        builder.useInstallCache(offlineAssets);
+        builder
+            .useInstallCache(offlineAssets)
+            .map(offlineAssets, strategies.backgroundFetch());
     }
 }
 
